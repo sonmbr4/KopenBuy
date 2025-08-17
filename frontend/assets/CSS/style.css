@@ -1,0 +1,259 @@
+:root {
+    --primary-color: #2e8b57;
+    --primary-light: #3cb371;
+    --primary-dark: #1c6e44;
+    --secondary-color: #333;
+    --light-gray: #f8f9fa;
+    --dark-gray: #444;
+    --white: #fff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    color: var(--secondary-color);
+    background-color: var(--light-gray);
+    line-height: 1.6;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--secondary-color);
+    padding: 0.75rem 0;
+}
+.navbar-brand {
+    font-weight: 700;
+    color: var(--white) !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.nav-link {
+    color: var(--white) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+}
+
+/* Buttons */
+.btn {
+    transition: var(--transition);
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+}
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    height: 100%;
+}
+.card:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: var(--shadow-md);
+}
+
+/* Product Cards */
+.product-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.product-image {
+    height: 180px;
+    object-fit: contain;
+    padding: 1rem;
+    background-color: var(--white);
+}
+.card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+}
+.card-title {
+    font-size: 1rem;
+    height: 2.5rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+.card-text {
+    font-size: 0.875rem;
+    height: 3rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    margin-bottom: 0.5rem;
+}
+.card-footer {
+    padding: 1rem;
+    background: white !important;
+    border-top: 1px solid rgba(0,0,0,0.1) !important;
+    margin-top: auto;
+}
+
+/* Carousel */
+.product-carousel {
+    margin-top: 1rem;
+}
+.carousel-item {
+    transition: transform 1s ease-in-out;
+}
+.carousel-indicators button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background-color: rgba(46,139,87,0.5);
+}
+.carousel-indicators button.active {
+    background-color: var(--primary-dark);
+}
+.carousel-control-prev, .carousel-control-next {
+    width: 5%;
+    color: var(--primary-dark);
+    opacity: 1;
+}
+.carousel-control-prev-icon, .carousel-control-next-icon {
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: 1.5rem;
+}
+
+/* Animations */
+.fade-in-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.product-section {
+    overflow: hidden;
+}
+
+/* Modal & Footer */
+.modal-header {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+.footer {
+    background-color: var(--secondary-color);
+    color: var(--white);
+    padding: 3rem 0;
+}
+.footer a {
+    color: var(--white);
+    text-decoration: none;
+    transition: var(--transition);
+}
+.footer a:hover {
+    color: var(--primary-light);
+    text-decoration: underline;
+}
+.footer hr {
+    border-color: rgba(255,255,255,0.1);
+}
+
+/* Utilities */
+.bg-primary { background-color: var(--primary-color) !important; }
+.text-primary { color: var(--primary-color) !important; }
+.bg-secondary { background-color: var(--secondary-color) !important; }
+.bg-success { background-color: var(--primary-color) !important; }
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+.hover-shadow:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+    .navbar-collapse {
+        padding-top: 1rem;
+    }
+    .product-image {
+        height: 10rem;
+    }
+    .carousel-item div[style] {
+        height: 300px !important;
+        padding: 2rem !important;
+    }
+    .carousel-control-prev-icon, 
+    .carousel-control-next-icon {
+        width: 2rem;
+        height: 2rem;
+        background-size: 1rem;
+    }
+}
+
+.user-logged {
+    color: #f8f9fa !important; 
+}
+
+.user-logged i {
+    color: inherit; /* Hereda el color del contenedor */
+}
+
+#logout-btn {
+    font-weight: 500;
+}
+
+.dropdown-menu {
+    min-width: 120px;
+}
+
+#register-form .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(46, 139, 87, 0.25);
+}
+
+#register-form .btn-primary {
+    margin-top: 1rem;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}

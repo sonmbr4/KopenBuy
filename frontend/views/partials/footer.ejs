@@ -1,0 +1,51 @@
+<footer class="footer py-5 bg-dark text-white">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <h4 class="mb-4">Kopen Buy</h4>
+                <p>Tu tienda de tecnología de confianza. Ofrecemos los mejores productos a los mejores precios.</p>
+            </div>
+            <div class="col-md-2">
+                <h5 class="mb-4">Enlaces</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="index.html" class="text-white text-decoration-none">Inicio</a></li>
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Productos</a></li>
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Ofertas</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5 class="mb-4">Categorías</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Laptops</a></li>
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Smartphones</a></li>
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Audio</a></li>
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Gaming</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5 class="mb-4">Contacto</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="bi bi-geo-alt me-2"></i> Calle Principal 123</li>
+                    <li class="mb-2"><i class="bi bi-telephone me-2"></i> +123 456 7890</li>
+                    <li class="mb-2"><i class="bi bi-envelope me-2"></i> info@kopenbuy.com</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4 bg-light">
+        <div class="text-center">
+            <p class="mb-0">&copy; <span id="currentYear"></span> Kopen Buy. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+<script>
+    document.getElementById("currentYear").innerHTML = new Date().getFullYear();
+</script>
+  
+    <script>
+        function verDetalles(productId) {
+            // Guardar el ID del producto en localStorage
+            localStorage.setItem('productoActual', productId);
+            // Redirigir a la página de detalles
+            window.location.href = 'MirarProductos.html';
+        }
+    </script>
