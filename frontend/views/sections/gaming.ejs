@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tienda de tecnología con los mejores productos al mejor precio">
+    <title>Kopen Buy - Tecnología de Última Generación</title>
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+
+
+
+<body>
+    <!-- Navbar similar pero con Gaming activo -->
+    <main>
+        <%- include('../partials/header.ejs'); %>
+
+        <h2 class="text-center my-5">Productos de gaming</h2>
+
+
+        <!-- Especificaciones Gaming -->
+        <section class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center mb-5">Especificaciones para Gaming</h2>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <i class="bi bi-mouse fs-1 text-danger mb-3"></i>
+                            <h4>Periféricos</h4>
+                            <p>Mouse con alta DPI, teclados mecánicos y headsets con sonido surround.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <i class="bi bi-display fs-1 text-danger mb-3"></i>
+                            <h4>Pantallas</h4>
+                            <p>Alta tasa de refresco (144Hz o más) y tiempo de respuesta rápido.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <i class="bi bi-pc-display-horizontal fs-1 text-danger mb-3"></i>
+                            <h4>Equipos</h4>
+                            <p>Tarjetas gráficas dedicadas y procesadores de alto rendimiento.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Productos -->
+        <section class="container mb-5">
+            <div class="row g-4">
+                <!-- Producto 1 -->
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                    <div class="card product-card h-100">
+                        <img src="assests/imagenes/Mousepad-Rgb-gaming.png" class="card-img-top" alt="Mouse Pad RGB">
+                        <div class="card-body">
+                            <h5 class="card-title">Mouse Pad RGB Aoas</h5>
+                            <p class="card-text">80x30cm, resistente al agua, iluminación RGB</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge gaming-badge">EN STOCK</span>
+                                <span class="fw-bold">$35.000</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <button class="btn btn-primary w-100">Ver Detalles</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Producto 2 -->
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                    <div class="card product-card h-100">
+                        <img src="assests/imagenes/logitech-G520-Gaming.png" class="card-img-top" alt="Mouse Logitech">
+                        <div class="card-body">
+                            <h5 class="card-title">Logitech G520 Hero</h5>
+                            <p class="card-text">RGB programable, 25600dpi, 11 botones</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge gaming-badge">EN STOCK</span>
+                                <span class="fw-bold">$211.000</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <button class="btn btn-primary w-100">Ver Detalles</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Producto 3 -->
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                    <div class="card product-card h-100">
+                        <img src="assests/imagenes/Mando-deadpool-gaming.png" class="card-img-top" alt="Control Xbox">
+                        <div class="card-body">
+                            <h5 class="card-title">Control Xbox Deadpool</h5>
+                            <p class="card-text">Edición especial, inalámbrico</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge gaming-badge">EN STOCK</span>
+                                <span class="fw-bold">$500.000</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <button class="btn btn-primary w-100">Ver Detalles</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+    </main>
+    <footer><%- include('../partials/footer.ejs'); %></footer>
+</body>
+
+</html>
