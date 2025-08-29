@@ -54,7 +54,7 @@
                 <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#login-modal">
                     <i class="bi bi-person"></i> Iniciar Sesión
                 </button>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#register-modal"
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal"
                     style="background-color: var(--primary-color)">
                     <i class="bi bi-pencil-square"></i> Registrarme
                 </button>
@@ -96,38 +96,43 @@
 </div>
 
 <!-- Modal Registro -->
-<div class="modal fade" id="register-modal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Registrarse</h5>
+                <h5 class="modal-title">Registro de Usuario</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="register-form">
+                <form id="registerForm">
                     <div class="mb-3">
-                        <label for="register-name" class="form-label">Nombre completo</label>
-                        <input type="text" class="form-control" id="register-name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="register-email" class="form-label">Correo electrónico</label>
-                        <input type="email" class="form-control" id="register-email" required>
+                        <label class="form-label">Nombre completo</label>
+                        <input type="text" class="form-control" name="nombre" required>
                     </div>
                     <div class="mb-3">
-                        <label for="register-password" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="register-password" minlength="6" required>
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" name="email" required>
                     </div>
                     <div class="mb-3">
-                        <label for="register-confirm-password" class="form-label">Confirmar contraseña</label>
-                        <input type="password" class="form-control" id="register-confirm-password" required>
+                        <label class="form-label">Telefono</label>
+                        <input type="tel" class="form-control" name="telefono" required>
                     </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="register-terms" required>
-                        <label class="form-check-label" for="register-terms">Acepto los términos y
-                            condiciones</label>
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" name="password" minlength="6" required>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Crear cuenta</button>
+                    <div class="mb-3">
+                        <label class="form-label">Confirmar Contraseña</label>
+                        <input type="password" class="form-control" name="confirmPassword" required>
+                    </div>
+                    <div class="alert alert-danger d-none" id="registerError"></div>
+                    <div class="alert alert-success d-none" id="registerSuccess"></div>
                 </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bd-dismiss="modal">Cancelar</button>
+                    
+                    <button type="submit" class="btn btn-primary w-100" onclick="registerUser()">Crear cuenta</button>
+                </div>
             </div>
         </div>
     </div>

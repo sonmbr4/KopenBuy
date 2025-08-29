@@ -14,7 +14,7 @@ router.get('/productos/add', productController.showAddForm)
 router.get('/productos/:id', productController.getProductById);
 
 //Editar productos
-router.put('/productos/:id', productController.updateProduct);
+router.put('/productos/:id', multer.single('image'), productController.updateProduct);
 
 // /admin/productos
 router.post('/productos', multer.single('image'), productController.addProduct);

@@ -38,7 +38,7 @@ app.use('/categorias', categoriaRoutes);
 app.use('/pedidos', pedidoRoutes);
 app.use('/facturas', facturaRoutes);
 app.use('/envios', envioRoutes);
-app.use('/usuarios', usuarioRoutes);
+app.use('/usuario', usuarioRoutes);
 
 app.get('/', (req, res) => {
   res.render('index', {title:'Tienda Tecno'});
