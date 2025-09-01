@@ -1,3 +1,6 @@
+//-- FUNCION DE REGISTRAR --
+
+
 async function registerUser(){
     const form = document.getElementById('registerForm');
     const errorDiv = document.getElementById('registerError');
@@ -66,3 +69,173 @@ document.getElementById('registerModal').addEventListener('hidden.bs.modal', fun
     document.getElementById('registerSuccess').classList.add('d-none');
     document.getElementById('registerForm').reset();
 })
+
+//-- FUNCION DE LOGIN --
+async function loginUser(){
+    const form = document.getElementById('loginForm');
+    const errorDiv = document.getElementById('loginError');
+    const successDiv = document.getElementById('loginSuccess');
+
+    const formData = {
+        email: form.email.value,
+        password: form.password.value
+    };
+
+    try{
+        const response = await fetch('/usuario/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        console.log('Respuesta del servidor:', data); // Para depuración
+
+        if(data.success && data.user){
+            showLoginSuccess('¡Inicio de sesión exitoso!');
+
+            // Guardar token y datos del usuario
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            // Actualizar la UI
+            updateUIAfterLogin(data.user);
+            
+            // Cerrar el modal después de 1 segundo
+            setTimeout(() => {
+                const modalInstance = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                if (modalInstance) {
+                    modalInstance.hide();
+                } else {
+                    // Si por alguna razón no se puede obtener la instancia, usar jQuery
+                    $('#loginModal').modal('hide');
+                }
+            }, 1000);
+        }else {
+            showLoginError('Error de conexion');
+        }
+    } catch (error) {
+        showLoginError('Error de conexion')
+    }
+}
+
+//Funcion para cerrar sesion
+function logout(){
+    updateUIAfterLogout();
+    window.location.href = '/';
+}
+
+//Actualizar UI despues del login
+function updateUIAfterLogin(user) {
+    console.log('Actualizando UI para usuario:', user); // Para depuración
+    
+    // Obtener referencias a los elementos del DOM
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const userMenu = document.getElementById('userMenu');
+    const authButtons = document.getElementById('authButtons');
+
+    // Mostrar/ocultar elementos según el estado de autenticación
+    if (authButtons) {
+        authButtons.style.display = 'none';
+    }
+    
+    if (userMenu) {
+        userMenu.style.display = 'block';
+        
+        // Actualizar el nombre de usuario en el menú
+        const userNameElement = document.getElementById('userName');
+        if (userNameElement) {
+            // Usar el nombre del usuario o un valor por defecto
+            const displayName = user.nombre || user.name || 'Mi cuenta';
+            console.log('Estableciendo nombre de usuario a:', displayName);
+            userNameElement.textContent = displayName;
+        }
+    }
+    
+    // Forzar actualización del DOM si es necesario
+    document.body.dispatchEvent(new Event('DOMSubtreeModified'));
+}
+
+
+//Actualizar UI despues del logout
+function updateUIAfterLogout(){
+    console.log('Actualizando UI después de logout');
+    
+    const userMenu = document.getElementById('userMenu');
+    const authButtons = document.getElementById('authButtons');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+
+    // Mostrar botones de autenticación
+    if (authButtons) {
+        authButtons.style.display = 'block';
+    }
+    
+    // Mostrar botones individuales por si acaso
+    if (loginBtn) loginBtn.style.display = 'block';
+    if (registerBtn) registerBtn.style.display = 'block';
+    
+    // Ocultar menú de usuario
+    if (userMenu) {
+        userMenu.style.display = 'none';
+    }
+    
+    // Limpiar datos de sesión
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Forzar actualización del DOM
+    document.body.dispatchEvent(new Event('DOMSubtreeModified'));
+    
+    console.log('UI actualizada después de logout');
+}
+
+//Mostrar Errores
+function showLoginError(message){
+    const errorDiv = document.getElementById('loginError');
+    errorDiv.textContent = message;
+    errorDiv.classList.remove('d-none');
+    errorDiv.classList.add('d-block');
+}
+
+function showLoginSuccess(message){
+    const successDiv = document.getElementById('loginSuccess');
+    successDiv.textContent = message;
+    successDiv.classList.remove('d-none');
+    successDiv.classList.add('d-block');
+}
+
+//verificar sesion al cargar la pagina
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+
+    if (token && user) {
+        try {
+            const userData = JSON.parse(user);
+            updateUIAfterLogin(userData);
+        } catch (e) {
+            console.error('Error al analizar datos de usuario:', e);
+            // Limpiar datos inválidos
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            updateUIAfterLogout();
+        }
+    } else {
+        // Asegurarse de que los botones de autenticación sean visibles
+        updateUIAfterLogout();
+    }
+});
+
+//limpiar modales al cerrarlos
+document.getElementById('loginModal').addEventListener('hidden.bs.modal', function() {
+  document.getElementById('loginError').classList.add('d-none');
+  document.getElementById('loginSuccess').classList.add('d-none');
+  document.getElementById('loginForm').reset();
+});
+
+
+

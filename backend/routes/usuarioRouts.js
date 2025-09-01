@@ -18,12 +18,16 @@ const usuarioController = require('../controllers/usuarioController');
 router.get('/', usuarioController.getUsuarios);
 router.get('/:id',  usuarioController.getUsuarioById);
 
-
+// Rutas de autenticación
 router.post('/register', usuarioController.register);
-router.post('/login', usuarioController.login)
+router.post('/login', usuarioController.login);
+router.post('/logout', usuarioController.logout);
+router.get('/verify', usuarioController.verifyToken);
 
 
 
+
+// Rutas de perfil
 router.put('/:id',  usuarioController.updateUsuario);
 router.delete('/:id', usuarioController.deleteUsuario);
 

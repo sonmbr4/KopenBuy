@@ -3,6 +3,13 @@ const express = require('express');
 const connectDB = require('./config/database')
 const path = require('path');
 const adminRoutes = require('./routes/adminRouts')
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+// const backup = require('./config/backup');
+// const cron = require('node-cron');
+
+
+
 
 const categoriaRoutes = require('./routes/categoriaRouts');
 const pedidoRoutes = require('./routes/pedidoRouts');
@@ -17,10 +24,33 @@ const app = express();
 connectDB()
 
 
-//Middleware 
-app.use(cors())
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+// Middleware 
+app.use(cors({
+  origin: 'http://localhost:3000', // Ajusta según tu configuración
+  credentials: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// Middleware para pasar el usuario autenticado a las vistas
+app.use((req, res, next) => {
+  // Verificar el token de autenticación
+  const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = { id: decoded.usuarioId };
+      res.locals.user = { isAuthenticated: true };
+    } catch (error) {
+      // Token inválido o expirado
+      res.locals.user = { isAuthenticated: false };
+    }
+  } else {
+    res.locals.user = { isAuthenticated: false };
+  }
+  next();
+});
 
 
 //Configuracion EJS como motor
@@ -72,6 +102,14 @@ app.get('/gamer', (req, res) => {
 //Iniciar el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
+
+
+// cron.schedule('* * * * * *', async () => {
+//   console.log('Realizando Backup de la Base de datos');
+//   backup.backupDatabase();
+// });
+
+
 
 
 module.exports = app;

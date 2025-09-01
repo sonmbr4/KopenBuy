@@ -1,4 +1,3 @@
-const usuario = require('../models/usuario');
 const Usuario = require('../models/usuario');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
@@ -33,17 +32,24 @@ exports.register = async (req, res) => {
       telefono
     });
 
-    //Generar token
+    // Generar token
     const token = generateToken(user._id);
+
+    // Configurar la cookie con el token
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+      sameSite: 'lax'
+    });
 
     res.status(201).json({
       success: true,
       message: 'Usuario registrado exitosamente',
-      token,
-      user:{
+      user: {
         id: user._id,
-        nombre:user.name,
-        email:user.email,
+        nombre: user.nombre,
+        email: user.email,
         role: user.role
       }
     })
@@ -64,7 +70,7 @@ exports.login = async (req, res) =>{
     const {email, password} = req.body
 
     //verificar si el usuario existe
-    const user = Usuario.findOne({email});
+    const user = await Usuario.findOne({email});
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -81,18 +87,20 @@ exports.login = async (req, res) =>{
       });
     }
 
-    //generar token
+    // Generar token
     const token = generateToken(user._id);
 
-    res.status(200).json({
+    // Responde con Exito
+    res.json({
       success: true,
-      message: 'Inicio de sesión exitoso',
+      message: 'Inicio de sesion exitoso',
       token,
       user:{
-        id: user._id,
-        nombre:user.name,
+        id:user._id,
+        nombre:user.nombre,
         email:user.email,
-        role: user.role
+        role:user.role,
+        phone:user.phone
       }
     });
   } catch (error){
@@ -101,6 +109,28 @@ exports.login = async (req, res) =>{
       success: false,
       message: 'Error en el servidor'
     });
+  }
+};
+
+//Verificar token (opcional, para mantener sesion)
+exports.verifyToken=async(req, res) => {
+  try{
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+
+    if(!token){
+      return res.status(401).json({ success: fasle, message: 'Token no proporcionado'})
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'tu_secreto_jwt');
+    const user = await Usuario.findById(decoded.usuarioId).select('-password');
+
+    if(!user){
+      return res.status(401).json({ success: false, message: 'Usuario no encontrado' });
+    }
+
+    res.json ({ success: true, user })
+  } catch(error){
+    res.satus(401).json({ success: false, message: 'Token invalido'})
   }
 }
 
@@ -141,9 +171,34 @@ exports.updateUsuario = async (req, res) => {
 exports.deleteUsuario = async (req, res) => {
   try {
     const usuario = await Usuario.findByIdAndDelete(req.params.id);
-    if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
-    res.json({ success: true });
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    res.json({ message: 'Usuario eliminado correctamente' });
   } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar el usuario' });
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Cerrar sesión
+exports.logout = (req, res) => {
+  try {
+    // Eliminar la cookie de autenticación
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Sesión cerrada correctamente'
+    });
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al cerrar sesión'
+    });
   }
 };
