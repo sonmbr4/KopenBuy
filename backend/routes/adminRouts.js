@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const productController = require('../controllers/productsController');
-const multer = require('../config/multer');
+const upload = require('../config/multer');
 
 //Ruta produtos
 // /admin/productos
@@ -14,10 +14,10 @@ router.get('/productos/add', productController.showAddForm)
 router.get('/productos/:id', productController.getProductById);
 
 //Editar productos
-router.put('/productos/:id', multer.single('image'), productController.updateProduct);
+router.put('/productos/:id', upload.single('image'), productController.updateProduct);
 
 // /admin/productos
-router.post('/productos', multer.single('image'), productController.addProduct);
+router.post('/productos', upload.single('image'), productController.addProduct);
 
 // Eliminar producto
 router.delete('/productos/:id', productController.deleteProduct);

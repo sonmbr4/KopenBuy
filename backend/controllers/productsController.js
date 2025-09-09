@@ -1,14 +1,46 @@
-// backend/controllers/adminController.js
+// backend/controllers/productsController.js
 const Product = require('../models/products');
+const Categoria = require('../models/categoria');
 const path = require('path');
 const fs = require('fs');
+
+// Obtener productos por categoría (los más recientes primero)
+exports.getProductsByCategory = async (category, limit = 4) => {
+  try {
+    return await Product.find({ categoria: new RegExp(category, 'i') })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .exec();
+  } catch (error) {
+    console.error(`Error al obtener productos de la categoría ${category}:`, error);
+    return [];
+  }
+};
+
+// Obtener productos destacados (los 4 más recientes)
+exports.getFeaturedProducts = async (limit = 4) => {
+  try {
+    return await Product.find()
+      .sort({ createdAt: -1 }) // Ordenar por fecha de creación descendente
+      .limit(limit) // Limitar a 4 productos
+      .exec();
+  } catch (error) {
+    console.error('Error al obtener productos destacados:', error);
+    return [];
+  }
+};
 
 // Ver todos los productos (READ)
 exports.getProducts = async (req, res) => {
   try {
     const products = await Product.find();
-    res.render('admin/adminProductos', { products });
+    const categorias = await Categoria.find();
+    res.render('admin/adminProductos', { 
+      products,
+      categorias // Enviamos las categorías a la vista
+    });
   } catch (error) {
+    console.error('Error al cargar los productos:', error);
     res.status(500).send("Error al cargar los productos");
   }
 };
@@ -35,12 +67,12 @@ exports.showAddForm = (req, res) => {
 //Editar Productos
 exports.updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { name, price, category, description } = req.body;
+  const { name, price, category, description, stock } = req.body;
 
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
-      { name, price, category, description },
+      { name, price, category, description, stock },
       { new: true } // Devuelve el producto actualizado
     );
 
@@ -78,6 +110,33 @@ exports.addProduct = async (req, res) => {
     res.status(500).json({ success: false, message: "Error al agregar el producto" });
   }
 };
+
+
+
+//Mostrar imagen del producto
+exports.getProductImage = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product || !product.image) {
+      return res.status(404).send('Imagen no Encontrada');
+    }
+    // Servir el archivo estático desde /uploads
+    const imagePath = product.image;
+    const path = require('path');
+    const fs = require('fs');
+    const fullPath = path.join(__dirname, '../uploads', path.basename(imagePath));
+    if (fs.existsSync(fullPath)) {
+      res.sendFile(fullPath);
+    } else {
+      res.status(404).send('Imagen no encontrada');
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+
+
 
 
 // Eliminar un producto (DELETE)

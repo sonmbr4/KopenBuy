@@ -5,6 +5,7 @@ const path = require('path');
 const adminRoutes = require('./routes/adminRouts')
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const methodOverride = require('method-override');
 // const backup = require('./config/backup');
 // const cron = require('node-cron');
 
@@ -25,12 +26,15 @@ connectDB()
 
 
 // Middleware 
+// Servir archivos estáticos de la carpeta uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(cors({
   origin: 'http://localhost:3000', // Ajusta según tu configuración
   credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
 app.use(cookieParser());
 
 // Middleware para pasar el usuario autenticado a las vistas
@@ -63,16 +67,37 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 
-app.use('/admin', adminRoutes)
+// Importar el controlador de productos
+const { getFeaturedProducts, getProductsByCategory } = require('./controllers/productsController');
+
+// Ruta principal
+app.get('/', async (req, res) => {
+  try {
+    const productosDestacados = await getFeaturedProducts(4);
+    const computerProducts = await getProductsByCategory('computadora', 4);
+    
+    res.render('index', {
+      title: 'Tienda Tecno',
+      productosDestacados: productosDestacados || [],
+      computerProducts: computerProducts || []
+    });
+  } catch (error) {
+    console.error('Error al cargar la página de inicio:', error);
+    res.status(500).render('index', {
+      title: 'Tienda Tecno',
+      productosDestacados: [],
+      computerProducts: []
+    });
+  }
+});
+
+// Rutas de la API
+app.use('/admin', adminRoutes);
 app.use('/categorias', categoriaRoutes);
 app.use('/pedidos', pedidoRoutes);
 app.use('/facturas', facturaRoutes);
 app.use('/envios', envioRoutes);
 app.use('/usuario', usuarioRoutes);
-
-app.get('/', (req, res) => {
-  res.render('index', {title:'Tienda Tecno'});
-});
 
 app.get('/tabletas', (req, res) =>{
   res.render('sections/laptops', {title: 'Tabletas'})
