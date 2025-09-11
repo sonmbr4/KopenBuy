@@ -6,6 +6,7 @@ const adminRoutes = require('./routes/adminRouts')
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override');
+const Product = require('./models/products');
 // const backup = require('./config/backup');
 // const cron = require('node-cron');
 
@@ -68,28 +69,56 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // Importar el controlador de productos
-const { getFeaturedProducts, getProductsByCategory } = require('./controllers/productsController');
+const { getFeaturedProducts, getProductsByCategory, getAllProducts } = require('./controllers/productsController');
 
 // Ruta principal
 app.get('/', async (req, res) => {
   try {
     const productosDestacados = await getFeaturedProducts(4);
     const computerProducts = await getProductsByCategory('computadora', 4);
-    
+    const phoneProducts = await getProductsByCategory('telefono', 4);
+    const audioProducts = await getProductsByCategory('audio', 4);
+    const gamingProducts = await getProductsByCategory('gaming', 4);
+
     res.render('index', {
       title: 'Tienda Tecno',
       productosDestacados: productosDestacados || [],
-      computerProducts: computerProducts || []
+      computerProducts: computerProducts || [],
+      phoneProducts: phoneProducts || [],
+      audioProducts: audioProducts || [],
+      gamingProducts: gamingProducts || []
     });
   } catch (error) {
     console.error('Error al cargar la página de inicio:', error);
     res.status(500).render('index', {
       title: 'Tienda Tecno',
       productosDestacados: [],
-      computerProducts: []
+      computerProducts: [],
+      phoneProducts: [],
+      audioProducts: [],
+      gamingProducts: []
     });
   }
 });
+
+
+// Ruta para mostrar el catálogo de productos
+app.get('/productos', async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.render('sections/catalogo', { 
+      title: 'Todos los Productos',
+      productosCatalogo: products || []
+    });
+  } catch (error) {
+    console.error('Error al cargar los productos:', error);
+    res.status(500).render('sections/catalogo', { 
+      title: 'Todos los Productos',
+      productosCatalogo: []
+    });
+  }
+});
+
 
 // Rutas de la API
 app.use('/admin', adminRoutes);
@@ -116,18 +145,9 @@ app.get('/gamer', (req, res) => {
 })
 
 
-
-
-
-
-
-
-
-
 //Iniciar el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
-
 
 // cron.schedule('* * * * * *', async () => {
 //   console.log('Realizando Backup de la Base de datos');

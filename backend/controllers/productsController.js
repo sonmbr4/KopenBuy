@@ -7,7 +7,7 @@ const fs = require('fs');
 // Obtener productos por categoría (los más recientes primero)
 exports.getProductsByCategory = async (category, limit = 4) => {
   try {
-    return await Product.find({ categoria: new RegExp(category, 'i') })
+    return await Product.find({ category: new RegExp(category, 'i') })
       .sort({ createdAt: -1 })
       .limit(limit)
       .exec();
