@@ -63,8 +63,19 @@ async function loadEditForm(productId) {
     document.getElementById('editProductId').value = product._id;
     document.getElementById('editName').value = product.name;
     document.getElementById('editPrice').value = product.price;
-    document.getElementById('editCategory').value = product.category || '';
+    document.getElementById('editStock').value = product.stock || 0;
     document.getElementById('editDescription').value = product.description || '';
+
+    // Establece la categoría seleccionada
+    const categorySelect = document.getElementById('editCategory');
+    if (product.category) {
+        for (let i = 0; i < categorySelect.options.length; i++) {
+            if (categorySelect.options[i].value === product.category) {
+                categorySelect.selectedIndex = i;
+                break;
+            }
+        }
+    }
   } catch (error) {
     console.error("Error al cargar el producto:", error);
     alert("Error al cargar los datos del producto");
@@ -76,8 +87,15 @@ document.getElementById('editProductForm').addEventListener('submit', async (e) 
   e.preventDefault();
   
   const formData = new FormData(e.target);
-  const data = Object.fromEntries(formData.entries());
-  const productId = data.id;
+  const data = {
+    name: formData.get('name'),
+    price: parseFloat(formData.get('price')),
+    category: formData.get('category'),
+    description: formData.get('description'),
+    stock: parseInt(formData.get('stock') || 0, 10)
+  };
+  
+  const productId = formData.get('id');
 
   try {
     const response = await fetch(`/admin/productos/${productId}`, {

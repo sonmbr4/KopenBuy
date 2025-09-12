@@ -43,6 +43,66 @@ h1,h2,h3,h4,h5,h6 {
     padding: 0.5rem 1rem;
 }
 
+/* Product Cards */
+.product-card {
+    border: 1px solid #e0e0e0;
+    transition: var(--transition);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.product-card .card-img-top {
+    height: 180px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.product-card .card-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--secondary-color);
+}
+
+.product-card .card-text {
+    font-size: 0.9rem;
+    color: #6c757d;
+    flex-grow: 1;
+}
+
+.product-card .price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.section-title {
+    position: relative;
+    padding-bottom: 0.5rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: var(--primary-color);
+}
+
 /* Buttons */
 .btn {
     transition: var(--transition);

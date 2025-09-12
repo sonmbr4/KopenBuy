@@ -86,7 +86,8 @@ app.get('/', async (req, res) => {
       computerProducts: computerProducts || [],
       phoneProducts: phoneProducts || [],
       audioProducts: audioProducts || [],
-      gamingProducts: gamingProducts || []
+      gamingProducts: gamingProducts || [],
+      user: res.locals.user || { isAuthenticated: false }
     });
   } catch (error) {
     console.error('Error al cargar la página de inicio:', error);
@@ -96,7 +97,8 @@ app.get('/', async (req, res) => {
       computerProducts: [],
       phoneProducts: [],
       audioProducts: [],
-      gamingProducts: []
+      gamingProducts: [],
+      user: res.locals.user || { isAuthenticated: false }
     });
   }
 });
@@ -118,6 +120,11 @@ app.get('/productos', async (req, res) => {
     });
   }
 });
+
+
+app.get('/carrito', (req, res) =>{
+  res.render('sections/carrito', {title: 'Tabletas'})
+})
 
 
 // Rutas de la API

@@ -96,7 +96,6 @@
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="table-success">
                                     <tr>
-                                        <th class="ps-4">ID</th>
                                         <th>Imagen</th> <!-- Nueva columna -->
                                         <th>Producto</th>
                                         <th>Categoría</th>
@@ -109,9 +108,6 @@
                                 <tbody id="productsTable">
                                     <% products.forEach(product=> { %>
                                         <tr>
-                                            <td class="ps-4">
-                                                <%= product._id %>
-                                            </td>
                                             <td>
                                                 <% if (product.image) { %>
                                                     <img src="<%= product.image %>" alt="Imagen"
@@ -129,7 +125,7 @@
                                             <td class="text-center">
                                                 <%= product.stock || 0 %>
                                             </td>
-                                            <td>$<%= product.price.toFixed(2) %>
+                                            <td>$<%= product.price ? Number(product.price).toFixed(2) : '0.00' %>
                                             </td>
                                             <td>
                                                 <span class="badge bg-success">Activo</span>
@@ -183,17 +179,37 @@
                 <div class="modal-body">
                     <!-- Formulario -->
                     <form id="addProductForm" action="/admin/productos" method="POST" enctype="multipart/form-data">
+                        <!--Nombre-->
                         <div class="mb-3">
                             <label for="name" class="form-label">Nombre</label>
                             <input type="text" class="form-control" name="name" required>
                         </div>
+                        <!--Categoría-->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Categoría</label>
+                            <select class="form-select" name="category" required>
+                                <option value="" disabled selected>Seleccione una categoría</option>
+                                <% if (categorias && categorias.length > 0) { %>
+                                    <% categorias.forEach(function(categoria) { %>
+                                        <option value="<%= categoria.nombre %>"><%= categoria.nombre %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                        <!--Precio-->
                         <div class="mb-3">
                             <label for="price" class="form-label">Precio</label>
                             <input type="number" class="form-control" name="price" step="0.01" required>
                         </div>
+                        <!--Descripción-->
                         <div class="mb-3">
                             <label for="description" class="form-label">Descripción</label>
                             <textarea class="form-control" name="description"></textarea>
+                        </div>
+                        <!--Stock-->
+                        <div>
+                            <label for="stock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" name="stock" required>
                         </div>
                         <div>
                             <label>Imagen del producto:</label>
@@ -251,7 +267,18 @@
                         </div>
                         <div class="mb-3">
                             <label for="editCategory" class="form-label">Categoría</label>
-                            <input type="text" class="form-control" id="editCategory" name="category">
+                            <select class="form-select" id="editCategory" name="category" required>
+                                <option value="" disabled>Seleccione una categoría</option>
+                                <% if (categorias && categorias.length > 0) { %>
+                                    <% categorias.forEach(function(categoria) { %>
+                                        <option value="<%= categoria.nombre %>"><%= categoria.nombre %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editStock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="editStock" name="stock" required>
                         </div>
                         <div class="mb-3">
                             <label for="editDescription" class="form-label">Descripción</label>

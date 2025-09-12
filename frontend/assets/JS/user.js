@@ -1,3 +1,23 @@
+// Función para mostrar/ocultar botones de carrito según autenticación
+function updateCartButtonsVisibility(isLoggedIn) {
+    const cartButtons = document.querySelectorAll('.add-to-cart-btn');
+    const cartNavButton = document.getElementById('cartNavButton');
+    
+    if (cartButtons) {
+        cartButtons.forEach(button => {
+            button.style.display = isLoggedIn ? 'inline-block' : 'none';
+        });
+    }
+    
+    // También actualizar botón de carrito en el navbar si existe
+    if (cartNavButton) {
+        cartNavButton.style.display = isLoggedIn ? 'block' : 'none';
+    }
+}
+
+
+
+
 //-- FUNCION DE REGISTRAR --
 
 
@@ -153,6 +173,10 @@ function updateUIAfterLogin(user) {
             console.log('Estableciendo nombre de usuario a:', displayName);
             userNameElement.textContent = displayName;
         }
+
+
+        // MOSTRAR BOTONES DE CARRITO
+        updateCartButtonsVisibility(true);
     }
     
     // Forzar actualización del DOM si es necesario
@@ -177,7 +201,12 @@ function updateUIAfterLogout(){
     // Mostrar botones individuales por si acaso
     if (loginBtn) loginBtn.style.display = 'block';
     if (registerBtn) registerBtn.style.display = 'block';
-    
+
+    // OCULTAR BOTONES DE CARRITO
+    updateCartButtonsVisibility(false);
+
+
+
     // Ocultar menú de usuario
     if (userMenu) {
         userMenu.style.display = 'none';

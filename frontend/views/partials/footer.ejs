@@ -8,18 +8,18 @@
             <div class="col-md-2">
                 <h5 class="mb-4">Enlaces</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a href="index.html" class="text-white text-decoration-none">Inicio</a></li>
-                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Productos</a></li>
-                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Ofertas</a></li>
+                    <li class="mb-2"><a href="/" class="text-white text-decoration-none">Inicio</a></li>
+                    <li class="mb-2"><a href="/productos" class="text-white text-decoration-none">Productos</a></li>
+                    <li class="mb-2"><a href="/ofertas" class="text-white text-decoration-none">Ofertas</a></li>
                 </ul>
             </div>
             <div class="col-md-3">
                 <h5 class="mb-4">Categorías</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Laptops</a></li>
-                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Smartphones</a></li>
-                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Audio</a></li>
-                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Gaming</a></li>
+                    <li class="mb-2"><a href="/laptops" class="text-white text-decoration-none">Laptops</a></li>
+                    <li class="mb-2"><a href="/smartphones" class="text-white text-decoration-none">Smartphones</a></li>
+                    <li class="mb-2"><a href="/audio" class="text-white text-decoration-none">Audio</a></li>
+                    <li class="mb-2"><a href="/gaming" class="text-white text-decoration-none">Gaming</a></li>
                 </ul>
             </div>
             <div class="col-md-3">
@@ -46,6 +46,6 @@
             // Guardar el ID del producto en localStorage
             localStorage.setItem('productoActual', productId);
             // Redirigir a la página de detalles
-            window.location.href = 'MirarProductos.html';
+            window.location.href = '/productos/' + productId;
         }
     </script>
