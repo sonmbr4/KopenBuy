@@ -18,6 +18,7 @@ const pedidoRoutes = require('./routes/pedidoRouts');
 const facturaRoutes = require('./routes/facturaRouts');
 const envioRoutes = require('./routes/envioRouts');
 const usuarioRoutes = require('./routes/usuarioRouts');
+const carritoRoutes = require('./routes/carritoRouts');
 
 const cors = require('cors');
 const app = express();
@@ -134,6 +135,7 @@ app.use('/pedidos', pedidoRoutes);
 app.use('/facturas', facturaRoutes);
 app.use('/envios', envioRoutes);
 app.use('/usuario', usuarioRoutes);
+app.use('/api/carrito', carritoRoutes);
 
 app.get('/tabletas', (req, res) =>{
   res.render('sections/laptops', {title: 'Tabletas'})
