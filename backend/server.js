@@ -6,7 +6,6 @@ const adminRoutes = require('./routes/adminRouts')
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override');
-const Product = require('./models/products');
 // const backup = require('./config/backup');
 // const cron = require('node-cron');
 
@@ -18,7 +17,6 @@ const pedidoRoutes = require('./routes/pedidoRouts');
 const facturaRoutes = require('./routes/facturaRouts');
 const envioRoutes = require('./routes/envioRouts');
 const usuarioRoutes = require('./routes/usuarioRouts');
-const cartRoutes = require('./routes/cart');
 
 const cors = require('cors');
 const app = express();
@@ -122,11 +120,6 @@ app.get('/productos', async (req, res) => {
   }
 });
 
-
-// Agregar esta ruta en server.js
-app.get('/carrito', (req, res) => {
-  res.render('sections/carrito', { title: 'Carrito de Compras' });
-});
 
 
 // Rutas de la API
