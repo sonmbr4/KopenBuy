@@ -128,8 +128,7 @@ app.use('/categorias', categoriaRoutes);
 app.use('/pedidos', pedidoRoutes);
 app.use('/facturas', facturaRoutes);
 app.use('/envios', envioRoutes);
-app.use('/usuario', usuarioRoutes);
-app.use('/api/cart', cartRoutes);
+app.use('/usuario', usuarioRoutes)
 
 app.get('/tabletas', (req, res) =>{
   res.render('sections/laptops', {title: 'Tabletas'})
