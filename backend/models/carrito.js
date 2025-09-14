@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-const cartItemSchema = new mongoose.Schema({
+const CartItemSchema = new mongoose.Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Producto',
+    ref: 'Product',
     required: true
   },
   quantity: {
@@ -15,22 +15,17 @@ const cartItemSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: true
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  image: String
+  }
 });
 
-const cartSchema = new mongoose.Schema({
+const CartSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Usuario',
+    ref: 'User',
     required: true,
     unique: true
   },
-  items: [cartItemSchema],
+  items: [CartItemSchema],
   total: {
     type: Number,
     default: 0
@@ -38,13 +33,18 @@ const cartSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
 });
 
 // Calcular el total antes de guardar
-cartSchema.pre('save', function(next) {
+CartSchema.pre('save', function(next) {
   this.total = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  this.updatedAt = Date.now();
   next();
 });
 
-module.exports = mongoose.model('Carrito', cartSchema);
+module.exports = mongoose.model('Cart', CartSchema);

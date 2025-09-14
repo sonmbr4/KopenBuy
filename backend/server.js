@@ -18,7 +18,7 @@ const pedidoRoutes = require('./routes/pedidoRouts');
 const facturaRoutes = require('./routes/facturaRouts');
 const envioRoutes = require('./routes/envioRouts');
 const usuarioRoutes = require('./routes/usuarioRouts');
-const carritoRoutes = require('./routes/carritoRouts');
+const cartRoutes = require('./routes/cart');
 
 const cors = require('cors');
 const app = express();
@@ -123,9 +123,10 @@ app.get('/productos', async (req, res) => {
 });
 
 
-app.get('/carrito', (req, res) =>{
-  res.render('sections/carrito', {title: 'Tabletas'})
-})
+// Agregar esta ruta en server.js
+app.get('/carrito', (req, res) => {
+  res.render('sections/carrito', { title: 'Carrito de Compras' });
+});
 
 
 // Rutas de la API
@@ -135,7 +136,7 @@ app.use('/pedidos', pedidoRoutes);
 app.use('/facturas', facturaRoutes);
 app.use('/envios', envioRoutes);
 app.use('/usuario', usuarioRoutes);
-app.use('/api/carrito', carritoRoutes);
+app.use('/api/cart', cartRoutes);
 
 app.get('/tabletas', (req, res) =>{
   res.render('sections/laptops', {title: 'Tabletas'})

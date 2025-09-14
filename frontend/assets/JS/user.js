@@ -15,82 +15,6 @@ function updateCartButtonsVisibility(isLoggedIn) {
     }
 }
 
-//Funcion Agregar al Carrito
-async function addtoCart(productId){
-    const token = localStorage.getItem('token');
-
-    if(!token){
-        alert('Porfavor inicia sesion para agregar productos a tu carrito');
-        return;
-    }
-
-    try{
-        const response = await fetch('/api/carrito/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ productId, quantity: 1 })
-        });
-
-        const data = await response.json();
-
-        if(data.success){
-            //Mostrar notificacion de exito
-            showCartNotificacion('✅ Producto agregado al carrito');
-
-            //Actualizar contador del carrito
-            const totalItems = data.cart.items.reduce((total, item) => total = item.quantity, 0);
-            updateCartCount(totalItems);
-        }else{
-            showCartNotification('❌ ' + data.message, 'error');
-        }
-    } catch (error){
-        console.error('error:', error);
-        showCartNotification('❌ Error de conexión', 'error');
-    }
-}
-
-function showCartNotification(message, type = 'success'){
-    //Eliminar notificacion existentes
-    const existingNotifications = document.querySelectorAll('.cart-notification');
-    existingNotifications.forEach(notification => notification.remove());
-
-    //Crear elemento de notificacion
-    const notification = document.createElement('div');
-    notification.className = `cart-notification alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        min-width: 300px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    `;
-    
-    notification.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-
-    document.body.appendChild(notification);
-
-    //AutoEliminar despues de 3 segundos
-    setTimeout(() => {
-        if (notification.parentNode) {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 150);
-        }
-    }, 3000);
-}
-
-
-
-
-
-
-
 
 
 //-- FUNCION DE REGISTRAR --
@@ -312,8 +236,43 @@ function showLoginSuccess(message){
     successDiv.classList.add('d-block');
 }
 
+// Actualizar el contador del carrito en la interfaz
+function updateCartCount(count) {
+    const cartCountElements = document.querySelectorAll('.cart-count');
+    cartCountElements.forEach(element => {
+        element.textContent = count;
+        element.style.display = count > 0 ? 'inline-block' : 'none';
+    });
+}
+
+// Cargar el carrito al iniciar la página
+async function loadCart() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+        const response = await fetch('/api/carrito', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.cart) {
+                const totalItems = data.cart.items.reduce((total, item) => total + item.quantity, 0);
+                updateCartCount(totalItems);
+            }
+        }
+    } catch (error) {
+        console.error('Error al cargar el carrito:', error);
+    }
+}
+
 //verificar sesion al cargar la pagina
 document.addEventListener('DOMContentLoaded', function() {
+    // Cargar el carrito cuando la página se cargue
+    loadCart();
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
 
