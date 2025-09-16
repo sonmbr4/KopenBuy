@@ -6,7 +6,6 @@ const adminRoutes = require('./routes/adminRouts')
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override');
-const Product = require('./models/products');
 // const backup = require('./config/backup');
 // const cron = require('node-cron');
 
@@ -19,8 +18,6 @@ const facturaRoutes = require('./routes/facturaRouts');
 const envioRoutes = require('./routes/envioRouts');
 const usuarioRoutes = require('./routes/usuarioRouts');
 const cartRoutes = require('./routes/cartRouts');
-
-
 
 const cors = require('cors');
 const app = express();
@@ -132,8 +129,7 @@ app.use('/categorias', categoriaRoutes);
 app.use('/pedidos', pedidoRoutes);
 app.use('/facturas', facturaRoutes);
 app.use('/envios', envioRoutes);
-app.use('/usuario', usuarioRoutes);
-app.use('/api/cart', cartRoutes);
+app.use('/usuario', usuarioRoutes)
 
 
 
