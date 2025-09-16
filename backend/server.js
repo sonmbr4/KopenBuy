@@ -18,7 +18,9 @@ const pedidoRoutes = require('./routes/pedidoRouts');
 const facturaRoutes = require('./routes/facturaRouts');
 const envioRoutes = require('./routes/envioRouts');
 const usuarioRoutes = require('./routes/usuarioRouts');
-const cartRoutes = require('./routes/cart');
+const cartRoutes = require('./routes/cartRouts');
+
+
 
 const cors = require('cors');
 const app = express();
@@ -123,11 +125,6 @@ app.get('/productos', async (req, res) => {
 });
 
 
-// Agregar esta ruta en server.js
-app.get('/carrito', (req, res) => {
-  res.render('sections/carrito', { title: 'Carrito de Compras' });
-});
-
 
 // Rutas de la API
 app.use('/admin', adminRoutes);
@@ -137,6 +134,16 @@ app.use('/facturas', facturaRoutes);
 app.use('/envios', envioRoutes);
 app.use('/usuario', usuarioRoutes);
 app.use('/api/cart', cartRoutes);
+
+
+
+
+
+
+app.get('/carrito', (req, res) =>{
+  res.render('carrito', {title: 'Carrito'})
+})
+
 
 app.get('/tabletas', (req, res) =>{
   res.render('sections/laptops', {title: 'Tabletas'})
@@ -153,6 +160,8 @@ app.get('/audio', (req, res) =>{
 app.get('/gamer', (req, res) => {
   res.render('sections/gaming', {title: 'Gamer'})
 })
+
+
 
 
 //Iniciar el servidor

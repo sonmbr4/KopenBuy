@@ -30,9 +30,9 @@ const CartSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  totalItems: {
+    type: Number,
+    default: 0
   },
   updatedAt: {
     type: Date,
@@ -40,9 +40,10 @@ const CartSchema = new mongoose.Schema({
   }
 });
 
-// Calcular el total antes de guardar
+// Calcular totales antes de guardar
 CartSchema.pre('save', function(next) {
   this.total = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  this.totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
   this.updatedAt = Date.now();
   next();
 });

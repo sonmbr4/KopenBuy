@@ -1,3 +1,5 @@
+// -- FUNCIONES PARA EL CARRITO --
+
 // Función para mostrar/ocultar botones de carrito según autenticación
 function updateCartButtonsVisibility(isLoggedIn) {
     const cartButtons = document.querySelectorAll('.add-to-cart-btn');
@@ -14,6 +16,102 @@ function updateCartButtonsVisibility(isLoggedIn) {
         cartNavButton.style.display = isLoggedIn ? 'block' : 'none';
     }
 }
+
+// Función para agregar producto al carrito
+async function addToCart(productId) {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        alert('Por favor inicia sesión para agregar productos al carrito');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ productId, quantity: 1 })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Mostrar notificación de éxito
+            showCartNotification('Producto agregado al carrito ✅');
+            
+            // Actualizar contador del carrito
+            updateCartCount(data.cartCount);
+        } else {
+            alert('Error al agregar al carrito: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión');
+    }
+}
+
+// Función para mostrar notificación del carrito
+function showCartNotification(message) {
+    // Crear notificación toast de Bootstrap
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-white bg-success border-0';
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    // Remover el toast después de que se oculte
+    toast.addEventListener('hidden.bs.toast', () => {
+        toast.remove();
+    });
+}
+
+// Función para actualizar contador del carrito
+function updateCartCount(count) {
+    const cartCount = document.getElementById('cartCount');
+    if (cartCount) {
+        cartCount.textContent = count;
+        cartCount.style.display = count > 0 ? 'inline' : 'none';
+    }
+}
+
+
+
+
+async function loadCartInfo() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+        const response = await fetch('/api/cart', {
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if(response.ok){
+            const cartData = await response.json();
+            updateCartCount(cartData.totalItems || 0);
+        }
+    } catch (error){
+        console.error('Error cargando informacion del carrito', error);
+    }
+}
+
 
 
 
@@ -176,6 +274,8 @@ function updateUIAfterLogin(user) {
 
         // MOSTRAR BOTONES DE CARRITO
         updateCartButtonsVisibility(true);
+
+        loadCartInfo();
     }
     
     // Forzar actualización del DOM si es necesario
@@ -236,43 +336,9 @@ function showLoginSuccess(message){
     successDiv.classList.add('d-block');
 }
 
-// Actualizar el contador del carrito en la interfaz
-function updateCartCount(count) {
-    const cartCountElements = document.querySelectorAll('.cart-count');
-    cartCountElements.forEach(element => {
-        element.textContent = count;
-        element.style.display = count > 0 ? 'inline-block' : 'none';
-    });
-}
-
-// Cargar el carrito al iniciar la página
-async function loadCart() {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    try {
-        const response = await fetch('/api/carrito', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            if (data.success && data.cart) {
-                const totalItems = data.cart.items.reduce((total, item) => total + item.quantity, 0);
-                updateCartCount(totalItems);
-            }
-        }
-    } catch (error) {
-        console.error('Error al cargar el carrito:', error);
-    }
-}
-
 //verificar sesion al cargar la pagina
 document.addEventListener('DOMContentLoaded', function() {
     // Cargar el carrito cuando la página se cargue
-    loadCart();
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
 
@@ -291,6 +357,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Asegurarse de que los botones de autenticación sean visibles
         updateUIAfterLogout();
     }
+
+    //Verificar estado cada 30 segundos por si el token expira
+    setInterval(() =>{
+        if (localStorage.getItem('token')) {
+            loadCartInfo();
+        }
+    }, 30000);
 });
 
 //limpiar modales al cerrarlos
@@ -299,6 +372,3 @@ document.getElementById('loginModal').addEventListener('hidden.bs.modal', functi
   document.getElementById('loginSuccess').classList.add('d-none');
   document.getElementById('loginForm').reset();
 });
-
-
-

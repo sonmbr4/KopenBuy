@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Carrito de compras - Kopen Buy">
+    <title>Carrito de Compras - Kopen Buy</title>
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+    <%- include('./partials/header.ejs'); %>
+
+        <main class="container my-5">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Carrito de Compras</li>
+                </ol>
+            </nav>
+
+            <!-- Título -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="h2 mb-0">
+                        <i class="bi bi-cart3 me-2"></i>
+                        Mi Carrito de Compras
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Mensaje de carrito vacío -->
+            <div id="empty-cart-message" class="text-center py-5" style="display: none;">
+                <div class="mb-4">
+                    <i class="bi bi-cart-x display-1 text-muted"></i>
+                </div>
+                <h3 class="text-muted mb-3">Tu carrito está vacío</h3>
+                <p class="text-muted mb-4">¡Agrega algunos productos increíbles a tu carrito!</p>
+                <a href="/" class="btn btn-primary btn-lg">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Continuar Comprando
+                </a>
+            </div>
+
+            <!-- Contenido del carrito -->
+            <div class="row" id="cart-content">
+                <!-- Items del carrito -->
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Productos en tu carrito</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Loading spinner -->
+                            <div id="cart-loading" class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <p class="mt-2 text-muted">Cargando tu carrito...</p>
+                            </div>
+
+                            <!-- Container para los items del carrito -->
+                            <div id="cart-items">
+                                <!-- Los items se cargarán dinámicamente aquí -->
+                            </div>
+
+                            <!-- Botones de acción -->
+                            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top"
+                                id="cart-actions" style="display: none !important;">
+                                <button class="btn btn-outline-danger" onclick="clearCart()">
+                                    <i class="bi bi-trash me-2"></i>
+                                    Vaciar Carrito
+                                </button>
+                                <a href="/" class="btn btn-outline-primary">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    Continuar Comprando
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumen del carrito -->
+                <div class="col-lg-4" id="cart-summary" style="display: none;">
+                    <div class="card sticky-top" style="top: 20px;">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-receipt me-2"></i>
+                                Resumen del Pedido
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Resumen de costos -->
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span id="cart-subtotal">$0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Envío:</span>
+                                <span class="text-success">Gratis</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Impuestos:</span>
+                                <span id="cart-taxes">$0</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3">
+                                <strong>Total:</strong>
+                                <strong class="text-primary" id="cart-total">$0</strong>
+                            </div>
+
+                            <!-- Botones de checkout -->
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-success btn-lg" onclick="proceedToCheckout()">
+                                    <i class="bi bi-credit-card me-2"></i>
+                                    Proceder al Pago
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="saveForLater()">
+                                    <i class="bi bi-bookmark me-2"></i>
+                                    Guardar para Después
+                                </button>
+                            </div>
+
+                            <!-- Información adicional -->
+                            <div class="mt-4 p-3 bg-light rounded">
+                                <h6 class="text-success mb-2">
+                                    <i class="bi bi-shield-check me-2"></i>
+                                    Compra Segura
+                                </h6>
+                                <small class="text-muted">
+                                    • Envío gratis en compras superiores a $50,000<br>
+                                    • Garantía de satisfacción<br>
+                                    • Soporte 24/7
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <%- include('./partials/footer.ejs'); %>
+
+            <!-- Scripts -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="/JS/user.js"></script>
+            <script src="/JS/carrito.js"></script>
+
+            <script>
+                // Funciones específicas de la página del carrito
+
+                /**
+                 * Procede al checkout
+                 */
+                function proceedToCheckout() {
+                    if (!cart.items || cart.items.length === 0) {
+                        showNotification('Tu carrito está vacío', 'warning');
+                        return;
+                    }
+
+                    // Aquí puedes redirigir a la página de checkout
+                    showNotification('Redirigiendo al checkout...', 'info');
+                    // window.location.href = '/checkout';
+                }
+
+                /**
+                 * Guarda el carrito para después
+                 */
+                function saveForLater() {
+                    showNotification('Carrito guardado para después', 'success');
+                }
+
+                // Inicializar la página del carrito cuando se carga
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Ocultar el loading después de un momento
+                    setTimeout(() => {
+                        document.getElementById('cart-loading').style.display = 'none';
+
+                        // Mostrar acciones del carrito si hay items
+                        if (cart.items && cart.items.length > 0) {
+                            document.getElementById('cart-actions').style.display = 'flex !important';
+                        }
+                    }, 1000);
+                });
+
+                // Actualizar resumen cuando cambie el carrito
+                function updateCartSummary() {
+                    const subtotalElement = document.getElementById('cart-subtotal');
+                    const taxesElement = document.getElementById('cart-taxes');
+                    const totalElement = document.getElementById('cart-total');
+
+                    if (subtotalElement && cart.total) {
+                        const subtotal = cart.total;
+                        const taxes = Math.round(subtotal * 0.19); // 19% de impuestos
+                        const total = subtotal + taxes;
+
+                        subtotalElement.textContent = `$${subtotal.toLocaleString()}`;
+                        taxesElement.textContent = `$${taxes.toLocaleString()}`;
+                        totalElement.textContent = `$${total.toLocaleString()}`;
+                    }
+                }
+
+                // Sobrescribir la función renderCartItems para incluir actualización del resumen
+                const originalRenderCartItems = window.renderCartItems;
+                window.renderCartItems = function () {
+                    if (originalRenderCartItems) {
+                        originalRenderCartItems();
+                    }
+                    updateCartSummary();
+
+                    // Mostrar/ocultar acciones del carrito
+                    const cartActions = document.getElementById('cart-actions');
+                    if (cartActions) {
+                        if (cart.items && cart.items.length > 0) {
+                            cartActions.style.display = 'flex';
+                        } else {
+                            cartActions.style.display = 'none';
+                        }
+                    }
+                };
+            </script>
+
+            <style>
+                .cart-item {
+                    transition: background-color 0.2s ease;
+                }
+
+                .cart-item:hover {
+                    background-color: #f8f9fa;
+                }
+
+                .sticky-top {
+                    position: sticky;
+                    top: 20px;
+                    z-index: 1020;
+                }
+
+                @media (max-width: 991.98px) {
+                    .sticky-top {
+                        position: static;
+                    }
+                }
+
+                .card-img-top {
+                    height: 200px;
+                    object-fit: cover;
+                }
+
+                .cart-item img {
+                    height: 80px;
+                    width: 80px;
+                    object-fit: cover;
+                }
+            </style>
+</body>
+
+</html>

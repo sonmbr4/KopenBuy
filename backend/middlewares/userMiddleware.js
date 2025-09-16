@@ -10,7 +10,9 @@ const userMiddleware = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'tu_secreto_jwt');
-        const user = await User.findById(decoded.userId).select('-password');
+        // Usar usuarioId para ser consistente con el resto del código
+        const userId = decoded.userId || decoded.usuarioId;
+        const user = await User.findById(userId).select('-password');
 
         if(!user){
             return res.status(401).json({ message: 'Token Invalido.' });
