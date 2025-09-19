@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/database')
@@ -6,6 +7,7 @@ const adminRoutes = require('./routes/adminRouts')
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override');
+const Product = require('./models/products');
 // const backup = require('./config/backup');
 // const cron = require('node-cron');
 
@@ -13,11 +15,12 @@ const methodOverride = require('method-override');
 
 
 const categoriaRoutes = require('./routes/categoriaRouts');
-const pedidoRoutes = require('./routes/pedidoRouts');
 const facturaRoutes = require('./routes/facturaRouts');
 const envioRoutes = require('./routes/envioRouts');
 const usuarioRoutes = require('./routes/usuarioRouts');
 const cartRoutes = require('./routes/cartRouts');
+const checkoutRoutes = require('./routes/checkoutRouts');
+
 
 const cors = require('cors');
 const app = express();
@@ -64,6 +67,10 @@ app.set('views', path.join(__dirname, '../frontend/views'))
 
 app.use(express.static(path.join(__dirname, '../frontend/assets')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+
+
 
 
 
@@ -126,10 +133,12 @@ app.get('/productos', async (req, res) => {
 // Rutas de la API
 app.use('/admin', adminRoutes);
 app.use('/categorias', categoriaRoutes);
-app.use('/pedidos', pedidoRoutes);
 app.use('/facturas', facturaRoutes);
 app.use('/envios', envioRoutes);
-app.use('/usuario', usuarioRoutes)
+app.use('/usuario', usuarioRoutes);
+
+app.use('/api/cart', cartRoutes);
+app.use('/api/checkout', checkoutRoutes);
 
 
 
@@ -141,20 +150,84 @@ app.get('/carrito', (req, res) =>{
 })
 
 
-app.get('/tabletas', (req, res) =>{
-  res.render('sections/laptops', {title: 'Tabletas'})
+
+
+
+
+app.get('/tabletas', async (req, res) =>{
+  try {
+    const productos = await getProductsByCategory('computadora');
+  
+  res.render('sections/laptops', {
+    title: 'Tabletas',
+    productosComputadora: productos || [],
+    user: res.locals.user || { isAuthenticated: false }
+  });
+  } catch (error) {
+    console.error('Error al cargar la pagina de tabletas:', error);
+    res.status(500).render('sections/laptops', {
+      title: 'Tabletas',
+      productosComputadora: [],
+      user: res.locals.user || { isAuthenticated: false }
+    });
+  }
 })
 
-app.get('/telefonos', (req, res) =>{
-  res.render('sections/smartphones', {title: 'telefonos'})
+app.get('/telefonos', async (req, res) => {
+  try {
+    const productos = await getProductsByCategory('telefono');
+    
+    res.render('sections/smartphones', {
+      title: 'Teléfonos',
+      productosSmartphones: productos || [],
+      user: res.locals.user || { isAuthenticated: false }
+    });
+  } catch (error) {
+    console.error('Error al cargar la página de teléfonos:', error);
+    res.status(500).render('sections/smartphones', {
+      title: 'Teléfonos',
+      productosSmartphones: [],
+      user: res.locals.user || { isAuthenticated: false }
+    });
+  }
 })
 
-app.get('/audio', (req, res) =>{
-  res.render('sections/audio', {title: 'audio'})
+app.get('/audio', async (req, res) => {
+  try {
+    const productos = await getProductsByCategory('audio');
+    
+    res.render('sections/audio', {
+      title: 'Audio',
+      productosAudio: productos || [],
+      user: res.locals.user || { isAuthenticated: false }
+    });
+  } catch (error) {
+    console.error('Error al cargar la página de audio:', error);
+    res.status(500).render('sections/audio', {
+      title: 'Audio',
+      productosAudio: [],
+      user: res.locals.user || { isAuthenticated: false }
+    });
+  }
 })
 
-app.get('/gamer', (req, res) => {
-  res.render('sections/gaming', {title: 'Gamer'})
+app.get('/gamer', async (req, res) => {
+  try {
+    const productos = await getProductsByCategory('gaming');
+    
+    res.render('sections/gaming', {
+      title: 'Gaming',
+      productosGaming: productos || [],
+      user: res.locals.user || { isAuthenticated: false }
+    });
+  } catch (error) {
+    console.error('Error al cargar la página de gaming:', error);
+    res.status(500).render('sections/gaming', {
+      title: 'Gaming',
+      productosGaming: [],
+      user: res.locals.user || { isAuthenticated: false }
+    });
+  }
 })
 
 

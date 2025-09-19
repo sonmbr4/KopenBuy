@@ -1,3 +1,28 @@
+// Vacía el carrito sin confirmación (para uso interno, por ejemplo al pagar)
+async function clearCartNoConfirm() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch('/api/cart/clear', {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            await loadCartData();
+        } else {
+            throw new Error(result.message || 'Error al vaciar el carrito');
+        }
+
+    } catch (error) {
+        console.error('Error al vaciar carrito:', error);
+    }
+}
 /**
  * Funcionalidad del carrito de compras
  * Maneja agregar productos, mostrar notificaciones y gestionar el carrito
