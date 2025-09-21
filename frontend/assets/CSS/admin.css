@@ -1,0 +1,403 @@
+:root {
+    --primary-color: #2e8b57;        /* Verde principal */
+    --primary-light: #3cb371;       /* Verde claro */
+    --primary-dark: #1c6e44;        /* Verde oscuro */
+    --primary-lighter: #e8f5e9;     /* Verde muy claro para fondos */
+    --secondary-color: #212529;     /* Gris oscuro */
+    --light-gray: #f8f9fa;          /* Gris claro */
+    --dark-gray: #343a40;           /* Gris medio */
+    --white: #fff;
+    --black: #000;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --transition-fast: all 0.2s ease;
+    --transition-normal: all 0.3s ease;
+}
+
+/* ========== ESTILOS GENERALES ========== */
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--light-gray);
+}
+
+.admin-header {
+    background-color: var(--secondary-color);
+    box-shadow: var(--shadow-md);
+}
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+    background-color: var(--white);
+    min-height: calc(100vh - 56px);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-normal);
+}
+
+.list-group-item {
+    border-left: 0;
+    border-right: 0;
+    padding: 0.75rem 1.25rem;
+    transition: var(--transition-fast);
+    color: var(--secondary-color);
+}
+
+.list-group-item:first-child {
+    border-top: 0;
+}
+
+.list-group-item.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--white);
+}
+
+.list-group-item-action:hover:not(.active) {
+    background-color: rgba(46, 139, 87, 0.1);
+    color: var(--primary-dark);
+}
+
+/* ========== TABLAS ========== */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table th {
+    white-space: nowrap;
+    background-color: var(--primary-lighter);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(46, 139, 87, 0.05);
+}
+
+/* ========== PRODUCTOS ========== */
+.product-img-sm {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.product-img-md {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.badge-stock {
+    min-width: 40px;
+}
+
+/* ========== TARJETAS ========== */
+.card {
+    transition: var(--transition-normal);
+    border: none;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+/* Tarjetas de clientes */
+.card-client .card-header {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.card-client .bi-person-circle {
+    color: var(--white);
+    font-size: 2.5rem;
+}
+
+.card-client:hover {
+    box-shadow: 0 10px 20px rgba(46, 139, 87, 0.15);
+}
+
+/* ========== TARJETAS DE PEDIDOS ========== */
+.card-order .card-header.delivered {
+    background-color: var(--primary-dark); /* Verde oscuro para entregados */
+}
+
+.card-order .card-header.shipped {
+    background-color: #8fbc8f; /* Verde menta para en camino */
+}
+
+.card-order .card-header.pending {
+    background-color: #a9a9a9; /* Gris verdoso para pendientes */
+}
+
+/* ========== TARJETAS DE CLIENTES ========== */
+.card-client .card-header {
+    background-color: var(--primary-color); /* Verde principal */
+    color: var(--white);
+}
+
+.card-client .card-footer {
+    background-color: rgba(46, 139, 87, 0.05); /* Fondo muy claro */
+}
+
+/* ========== TÍTULOS DE SECCIÓN ========== */
+.section-title-pedidos {
+    color: #2e8b57 !important; /* Verde principal */
+}
+
+.section-title-clientes {
+    color: #3cb371 !important; /* Verde claro */
+}
+
+/* ========== BOTONES ========== */
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.action-buttons .btn {
+    padding: 0.25rem 0.5rem;
+    transition: var(--transition-fast);
+}
+
+/* ========== MODALES ========== */
+.modal-header {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.modal-footer {
+    background-color: var(--light-gray);
+}
+
+/* ========== TRANSICIONES ========== */
+.content-section {
+    transition: opacity 0.3s ease;
+}
+
+.fade-in {
+    opacity: 1;
+    transition: opacity 0.3s ease-in;
+}
+
+/* ========== CLIENTES ========== */
+.client-avatar {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-light);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.client-purchases {
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* ===== ESTILOS DE ESTADÍSTICAS ===== */
+.stats-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.stats-cards {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stats-card {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.stats-card i {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.stats-card h3 {
+    margin: 0.5rem 0;
+    font-size: 1.8rem;
+}
+
+/* Gráfico de Barras */
+/* Contenedor principal del gráfico */
+.sales-chart {
+    display: flex;
+    height: 250px;
+    align-items: flex-end;
+    gap: 15px;
+    padding: 20px 0;
+    margin-top: 20px;
+}
+
+/* Cada barra individual */
+.chart-bar-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    height: 100%;
+}
+
+/* La barra en sí (¡asegúrate de que tenga altura!) */
+.chart-bar {
+    width: 100%;
+    background-color: #2e8b57; /* Verde de tu paleta */
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s ease;
+    min-height: 1px; /* ¡Importante! */
+}
+
+/* Meses debajo de las barras */
+.chart-bar-container span {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #555;
+}
+
+.chart-bar:hover {
+    background-color: var(--primary-dark);
+    cursor: pointer
+}
+
+.chart-bar::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--dark-gray);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.chart-bar:hover::after {
+    opacity: 1;
+}
+
+.chart-bar-container span {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--dark-gray);
+}
+
+/* Tabla */
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.stats-table th, .stats-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.stats-table th {
+    background-color: var(--primary-lighter);
+}
+
+/* Estilos para el modal de configuración */
+
+
+ #profileConfigOffcanvas .offcanvas-header {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+#profileConfigOffcanvas .offcanvas-body {
+    padding: 1rem;
+}
+
+#profileConfigOffcanvas #profilePicture {
+    object-fit: cover; /* Para que la imagen se ajuste al círculo */
+}
+
+#profileConfigOffcanvas #changeProfilePicture {
+    display: none; /* Oculta el input de archivo */
+}
+
+#profileConfigOffcanvas .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #profileConfigModal .modal-dialog {
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    #profileConfigModal .col-md-4 {
+        border-right: none !important;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 20px;
+    }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 991.98px) {
+    .sidebar {
+        position: fixed;
+        z-index: 1000;
+        width: 250px;
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .product-img-sm {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+}

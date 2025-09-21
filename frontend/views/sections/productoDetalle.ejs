@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<%- include('../partials/head.ejs'); %>
+
+<body>
+    <%- include('../partials/header.ejs'); %>
+    
+    <main>
+<section class="container py-5">
+    <div class="row g-5 align-items-start">
+        <!-- Imagen del producto -->
+        <div class="col-lg-6 col-md-6 mb-4 mb-md-0">
+            <div class="product-image-container position-relative">
+                <div class="bg-white p-4 rounded-3 shadow-sm d-flex justify-content-center align-items-center"
+                    style="min-height:400px;">
+                    <img src="<%= producto.image || '/images/placeholder-product.jpg' %>" alt="<%= producto.name %>"
+                        class="img-fluid rounded-2" style="max-height:380px; object-fit:contain;" id="productImage">
+                </div>
+                <!-- Badge de estado del stock -->
+                <div class="position-absolute top-0 end-0 m-3">
+                    <span class="badge fs-6 <%= producto.stock <= 0 ? 'bg-danger' : (producto.stock < 10 ? 'bg-warning text-dark' : 'bg-success') %>">
+                        <%= producto.stock <= 0 ? 'Agotado' : (producto.stock < 10 ? 'Pocas unidades' : 'Disponible') %>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Información del producto -->
+        <div class="col-lg-6 col-md-6">
+            <div class="product-info">
+                <div class="mb-3">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                        <i class="bi bi-tag me-1"></i><%= producto.category %>
+                    </span>
+                </div>
+                
+                <h1 class="display-6 fw-bold mb-3 text-dark">
+                    <%= producto.name %>
+                </h1>
+                
+                <div class="price-section mb-4">
+                    <h2 class="text-success fw-bold mb-2">
+                        $<%= producto.price ? producto.price.toLocaleString('es-CO') : '0' %>
+                        <small class="text-muted fs-6">COP</small>
+                    </h2>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-truck me-1"></i>Envío gratis a partir de $100.000
+                    </p>
+                </div>
+                
+                <div class="product-description mb-4">
+                    <h5 class="fw-semibold mb-3">Descripción</h5>
+                    <p class="text-secondary lh-base">
+                        <%= producto.description || 'Sin descripción disponible' %>
+                    </p>
+                </div>
+                
+                <div class="product-features mb-4">
+                    <h6 class="fw-semibold mb-3">Características</h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <small>Garantía oficial</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <small>Envío seguro</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <small>Soporte técnico</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <small>Devolución fácil</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stock-info mb-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-semibold">Stock disponible:</span>
+                        <span class="fw-bold <%= producto.stock <= 0 ? 'text-danger' : (producto.stock < 10 ? 'text-warning' : 'text-success') %>">
+                            <%= producto.stock %> unidades
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="action-buttons">
+                    <% if (producto.stock > 0) { %>
+                        <div class="d-grid gap-2 d-md-flex">
+                            <a href="/carrito?add=<%= producto._id %>" 
+                               class="btn btn-success btn-lg px-4 flex-fill">
+                                <i class="bi bi-cart-plus me-2"></i>Agregar al carrito
+                            </a>
+                            <button type="button" class="btn btn-outline-secondary btn-lg px-3" title="Agregar a favoritos">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-lg px-3" title="Compartir">
+                                <i class="bi bi-share"></i>
+                            </button>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <div>
+                                <strong>Producto agotado</strong><br>
+                                <small>Te notificaremos cuando esté disponible nuevamente</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-lg w-100">
+                            <i class="bi bi-bell me-2"></i>Notificarme cuando esté disponible
+                        </button>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de comentarios y reseñas -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h3 class="mb-0 fw-bold">
+                            <i class="bi bi-chat-dots me-2 text-primary"></i>Reseñas y Comentarios
+                        </h3>
+                        <span class="badge bg-primary rounded-pill">
+                            <%= comentarios && comentarios.length > 0 ? comentarios.length : 0 %> comentarios
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Lista de comentarios -->
+                    <div class="comments-section mb-4">
+                        <% if (comentarios && comentarios.length > 0) { %>
+                            <div class="comments-list">
+                                <% comentarios.forEach(function(comentario, index) { %>
+                                    <div class="comment-item <%= index !== comentarios.length - 1 ? 'border-bottom' : '' %> pb-3 mb-3">
+                                        <div class="d-flex">
+                                            <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                 style="width: 40px; height: 40px; min-width: 40px;">
+                                                <i class="bi bi-person-fill"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                                    <h6 class="mb-0 fw-semibold text-dark">
+                                                        <%= comentario.usuario %>
+                                                    </h6>
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-clock me-1"></i>Hace 2 días
+                                                    </small>
+                                                </div>
+                                                <p class="mb-0 text-secondary lh-base">
+                                                    <%= comentario.texto %>
+                                                </p>
+                                                <div class="comment-actions mt-2">
+                                                    <button type="button" class="btn btn-link btn-sm text-muted p-0 me-3">
+                                                        <i class="bi bi-hand-thumbs-up me-1"></i>Útil
+                                                    </button>
+                                                    <button type="button" class="btn btn-link btn-sm text-muted p-0">
+                                                        <i class="bi bi-reply me-1"></i>Responder
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="text-center py-5">
+                                <i class="bi bi-chat-square-text display-1 text-muted mb-3"></i>
+                                <h5 class="text-muted mb-2">No hay comentarios aún</h5>
+                                <p class="text-muted">Sé el primero en dejar tu opinión sobre este producto</p>
+                            </div>
+                        <% } %>
+                    </div>
+                    
+                    <!-- Formulario para agregar comentario -->
+                    <div class="add-comment-section">
+                        <h5 class="mb-3 fw-semibold">Deja tu comentario</h5>
+                        <form action="/productos/<%= producto._id %>/comentario" method="POST" class="needs-validation" novalidate>
+                            <div class="mb-3">
+                                <label for="comentario" class="form-label fw-semibold">
+                                    <i class="bi bi-pencil-square me-1"></i>Tu opinión sobre este producto
+                                </label>
+                                <textarea name="comentario" id="comentario" rows="4" 
+                                          class="form-control border-2" 
+                                          placeholder="Comparte tu experiencia con este producto..."
+                                          required
+                                          maxlength="500"></textarea>
+                                <div class="form-text">
+                                    <small class="text-muted">Máximo 500 caracteres</small>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Por favor, escribe tu comentario.
+                                </div>
+                            </div>
+                            
+                            <!-- Rating opcional -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold mb-2">
+                                    <i class="bi bi-star me-1"></i>Calificación (opcional)
+                                </label>
+                                <div class="rating-stars">
+                                    <input type="hidden" name="rating" id="rating" value="0">
+                                    <div class="star-rating d-flex align-items-center gap-1">
+                                        <button type="button" class="btn btn-link p-0 star-btn" data-rating="1">
+                                            <i class="bi bi-star text-muted fs-5"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-link p-0 star-btn" data-rating="2">
+                                            <i class="bi bi-star text-muted fs-5"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-link p-0 star-btn" data-rating="3">
+                                            <i class="bi bi-star text-muted fs-5"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-link p-0 star-btn" data-rating="4">
+                                            <i class="bi bi-star text-muted fs-5"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-link p-0 star-btn" data-rating="5">
+                                            <i class="bi bi-star text-muted fs-5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="reset" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send me-1"></i>Enviar comentario
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos relacionados -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="related-products">
+                <h3 class="mb-4 fw-bold">
+                </h3>
+                <div class="row g-3">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    </main>
+
+    <%- include('../partials/footer.ejs'); %>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript personalizado -->
+    <script>
+        // Validación del formulario
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+
+        // Sistema de calificación con estrellas
+        document.addEventListener('DOMContentLoaded', function() {
+            const starButtons = document.querySelectorAll('.star-btn');
+            const ratingInput = document.getElementById('rating');
+
+            starButtons.forEach((button, index) => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const rating = parseInt(this.dataset.rating);
+                    ratingInput.value = rating;
+                    
+                    // Actualizar visualización de estrellas
+                    starButtons.forEach((btn, btnIndex) => {
+                        const star = btn.querySelector('i');
+                        if (btnIndex < rating) {
+                            star.className = 'bi bi-star-fill text-warning fs-5';
+                        } else {
+                            star.className = 'bi bi-star text-muted fs-5';
+                        }
+                    });
+                });
+
+                // Efecto hover
+                button.addEventListener('mouseenter', function() {
+                    const rating = parseInt(this.dataset.rating);
+                    starButtons.forEach((btn, btnIndex) => {
+                        const star = btn.querySelector('i');
+                        if (btnIndex < rating) {
+                            star.className = 'bi bi-star-fill text-warning fs-5';
+                        } else {
+                            star.className = 'bi bi-star text-muted fs-5';
+                        }
+                    });
+                });
+
+                button.addEventListener('mouseleave', function() {
+                    const currentRating = parseInt(ratingInput.value);
+                    starButtons.forEach((btn, btnIndex) => {
+                        const star = btn.querySelector('i');
+                        if (btnIndex < currentRating) {
+                            star.className = 'bi bi-star-fill text-warning fs-5';
+                        } else {
+                            star.className = 'bi bi-star text-muted fs-5';
+                        }
+                    });
+                });
+            });
+
+            // Contador de caracteres para el textarea
+            const textarea = document.getElementById('comentario');
+            if (textarea) {
+                const maxLength = textarea.getAttribute('maxlength');
+                const charCounter = document.createElement('div');
+                charCounter.className = 'text-end text-muted small mt-1';
+                charCounter.innerHTML = `<span id="char-count">0</span>/${maxLength} caracteres`;
+                textarea.parentNode.appendChild(charCounter);
+
+                textarea.addEventListener('input', function() {
+                    const currentLength = this.value.length;
+                    document.getElementById('char-count').textContent = currentLength;
+                    
+                    if (currentLength > maxLength * 0.9) {
+                        charCounter.className = 'text-end text-warning small mt-1';
+                    } else {
+                        charCounter.className = 'text-end text-muted small mt-1';
+                    }
+                });
+            }
+
+            // Animación suave para el botón de agregar al carrito
+            const addToCartBtn = document.querySelector('a[href*="/carrito?add="]');
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', function(e) {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="bi bi-check-circle me-2"></i>¡Agregado!';
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-success', 'disabled');
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.remove('disabled');
+                    }, 2000);
+                });
+            }
+        });
+
+        // Función para compartir producto
+        function shareProduct() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '<%= producto.name %>',
+                    text: 'Mira este producto en Kopen Buy',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copiar URL al portapapeles
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('¡URL copiada al portapapeles!');
+                });
+            }
+        }
+
+        // Agregar evento al botón de compartir
+        document.addEventListener('DOMContentLoaded', function() {
+            const shareBtn = document.querySelector('button[title="Compartir"]');
+            if (shareBtn) {
+                shareBtn.addEventListener('click', shareProduct);
+            }
+        });
+    </script>
+    <script src="/JS/productos.js"></script>
+</body>
+
+</html>

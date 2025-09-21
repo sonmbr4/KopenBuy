@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tienda de tecnología con los mejores productos al mejor precio">
+    <title>Kopen Buy - Tecnología de Última Generación</title>
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+
+<body>
+
+    <%- include('../partials/header.ejs'); %>
+
+
+        <main>
+
+            <h2 class="text-center my-5">Productos de audio</h2>
+            <!-- Guía de compra -->
+            <section class="py-5 bg-light">
+                <div class="container">
+                    <h2 class="text-center mb-5">Guía para elegir audio</h2>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="text-center">
+                                <i class="bi bi-headphones fs-1 mb-3"></i>
+                                <h4>Auriculares</h4>
+                                <p>Considera si prefieres over-ear, on-ear o in-ear, conexión inalámbrica o con
+                                    cable, y cancelación de ruido activa.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="text-center">
+                                <i class="bi bi-speaker fs-1 mb-3"></i>
+                                <h4>Parlantes</h4>
+                                <p>Potencia en vatios, conectividad, resistencia al agua y duración de batería para
+                                    portátiles.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Productos -->
+            <section class="container mb-5">
+                <div class="row g-4">
+                    <!-- Producto 1 -->
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="card product-card h-100">
+                            <img src="assests/imagenes/Audifonos-audio.png" class="card-img-top" alt="Audífonos Sleve">
+                            <div class="card-body">
+                                <h5 class="card-title">Audífonos Sleve Evo</h5>
+                                <p class="card-text">2da Generación, cancelación de ruido</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-success">EN STOCK</span>
+                                    <span class="fw-bold">$124.000</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <button class="btn btn-primary w-100">Ver Detalles</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Producto 2 -->
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="card product-card h-100">
+                            <img src="assests/imagenes/Jbl-Flip-6-audio.png" class="card-img-top" alt="Parlante JBL">
+                            <div class="card-body">
+                                <h5 class="card-title">Parlante JBL Flip 6</h5>
+                                <p class="card-text">Resistente al agua, 30W, Bluetooth</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-success">EN STOCK</span>
+                                    <span class="fw-bold">$440.000</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <button class="btn btn-primary w-100">Ver Detalles</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Producto 3 -->
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="card product-card h-100">
+                            <img src="assests/imagenes/Microfono-k8-audio.png" class="card-img-top" alt="Micrófono K8">
+                            <div class="card-body">
+                                <h5 class="card-title">Micrófono K8</h5>
+                                <p class="card-text">Inalámbrico para celular, USB-C</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-success">EN STOCK</span>
+                                    <span class="fw-bold">$22.000</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <button class="btn btn-primary w-100">Ver Detalles</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+        </main>
+        <footer><%- include('../partials/footer.ejs'); %></footer>
+</body>
+
+</html>
