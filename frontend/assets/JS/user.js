@@ -271,10 +271,20 @@ function updateUIAfterLogin(user) {
             userNameElement.textContent = displayName;
         }
 
+        // Mostrar/ocultar elementos de administrador si el usuario es admin
+        const adminMenuItems = document.querySelectorAll('.admin-menu-item');
+        if (user.role === 'admin') {
+            adminMenuItems.forEach(item => {
+                item.style.display = 'block';
+            });
+        } else {
+            adminMenuItems.forEach(item => {
+                item.style.display = 'none';
+            });
+        }
 
         // MOSTRAR BOTONES DE CARRITO
         updateCartButtonsVisibility(true);
-
         loadCartInfo();
     }
     
