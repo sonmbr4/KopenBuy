@@ -19,39 +19,6 @@
     <main>
         <%- include('../partials/header.ejs'); %>
 
-        <h2 class="text-center my-5">Productos de gaming</h2>
-
-
-        <!-- Especificaciones Gaming -->
-        <section class="py-5 bg-light">
-            <div class="container">
-                <h2 class="text-center mb-5">Especificaciones para Gaming</h2>
-                <div class="row">
-                    <div class="col-md-4 mb-4">
-                        <div class="text-center">
-                            <i class="bi bi-mouse fs-1 text-danger mb-3"></i>
-                            <h4>Periféricos</h4>
-                            <p>Mouse con alta DPI, teclados mecánicos y headsets con sonido surround.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="text-center">
-                            <i class="bi bi-display fs-1 text-danger mb-3"></i>
-                            <h4>Pantallas</h4>
-                            <p>Alta tasa de refresco (144Hz o más) y tiempo de respuesta rápido.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="text-center">
-                            <i class="bi bi-pc-display-horizontal fs-1 text-danger mb-3"></i>
-                            <h4>Equipos</h4>
-                            <p>Tarjetas gráficas dedicadas y procesadores de alto rendimiento.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Productos -->
         <section class="py-5 product-section">
                 <div class="container">
@@ -66,9 +33,9 @@
                                             <img src="<%= producto.image %>" class="card-img-top product-image"
                                                 alt="<%= producto.name %>" loading="lazy">
                                             <% } else { %>
-                                                <img src="/images/placeholder-product.jpg"
+                                                <img src="/assets/imagenes/placeholder-image.svg"
                                                     class="card-img-top product-image" alt="Imagen no disponible"
-                                                    loading="lazy">
+                                                    loading="lazy" onerror="handleImageError(this)">
                                                 <% } %>
                                                     <div class="card-body">
                                                         <h5 class="card-title">
@@ -97,12 +64,12 @@
                                                                 </div>
                                                     </div>
                                                     <div class="card-footer bg-white border-0 d-flex flex-column gap-2">
-                                                        <button class="btn btn-outline-primary w-100">Ver
-                                                            Detalles</button>
+                                                        <a href="/productos/<%= producto._id %>" class="btn btn-outline-primary w-100">Ver Detalles</a>
+                                                        <!-- Botón de Agregar al Carrito (solo para usuarios logueados) -->
                                                         <button class="btn btn-success add-to-cart-btn auth-only"
-                                                            style="display: none;"
-                                                            data-product-id="<%= producto._id %>">🛒 Agregar al
-                                                            Carrito</button>
+                                                            style="display: none;" data-product-id="<%= producto._id %>">
+                                                            🛒 Agregar al Carrito
+                                                        </button>
                                                     </div>
                                     </div>
                                 </div>
@@ -123,6 +90,7 @@
         <script src="/JS/user.js"></script>
         <script src="/JS/carrito.js"></script>
         <script src="/JS/animations.js"></script>
+        <script src="/JS/imgError.js"></script>
 </body>
 
 </html>

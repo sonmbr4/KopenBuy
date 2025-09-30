@@ -23,7 +23,7 @@ exports.register = async (req, res) => {
       });
     }
 
-    //Crear el nuevo ususario
+    //Crear el nuevo usuario
     const user = await Usuario.create({
       nombre,
       email,
@@ -36,11 +36,21 @@ exports.register = async (req, res) => {
     const token = generateToken(user._id);
 
     // Configurar la cookie con el token
-    res.cookie('token', token, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
-      sameSite: 'lax'
+      sameSite: 'lax',
+      path: '/',
+      // domain: 'tudominio.com', // Descomenta y configura en producción
+    };
+    
+    res.cookie('token', token, cookieOptions);
+    
+    // Para compatibilidad con algunos navegadores
+    res.cookie('auth_token', token, {
+      ...cookieOptions,
+      httpOnly: false // Permitir acceso desde JavaScript en el frontend
     });
 
     res.status(201).json({
@@ -51,8 +61,9 @@ exports.register = async (req, res) => {
         nombre: user.nombre,
         email: user.email,
         role: user.role
-      }
-    })
+      },
+      token
+    });
 
   } catch (error) {
     console.error(error);

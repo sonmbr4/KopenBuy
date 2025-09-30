@@ -372,3 +372,5 @@ document.getElementById('loginModal').addEventListener('hidden.bs.modal', functi
   document.getElementById('loginSuccess').classList.add('d-none');
   document.getElementById('loginForm').reset();
 });
+
+

@@ -41,7 +41,7 @@
                                         </div>
                                         <div class="col-md-3 d-none d-md-block">
                                             <img src="assets/imagenes/Control-Gamer.png" class="img-fluid" alt="Control"
-                                                loading="lazy">
+                                                loading="lazy" onerror="handleImageError(this)">
                                         </div>
                                     </div>
                                 </div>
@@ -61,7 +61,7 @@
                                         </div>
                                         <div class="col-md-3 d-none d-md-block">
                                             <img src="assets/imagenes/Auriculares.png" class="img-fluid" alt="Control"
-                                                loading="lazy">
+                                                loading="lazy" onerror="handleImageError(this)">
                                         </div>
                                     </div>
                                 </div>
@@ -75,14 +75,14 @@
                                     <div class="row h-100 align-items-center">
                                         <div class="col-md-6">
                                             <span class="badge bg-danger mb-3">OFERTA LIMITADA</span>
-                                            <h2 class="display-5 fw-bold mb-3">Laptops Gamer</h2>
+                                            <h2 class="display-5 fw-bold mb-3">Portátil Gamer</h2>
                                             <p class="lead mb-4">hasta 30% de descuento en todos los dispositivos Gamer
                                             </p>
                                             <a href="#" class="btn btn-success btn-lg px-4">Ver oferta</a>
                                         </div>
                                         <div class="col-md-3 d-none d-md-block">
                                             <img src="assets/imagenes/Laptop-Gamer-Carousel.png" class="img-fluid"
-                                                alt="Control" loading="lazy">
+                                                alt="Control" loading="lazy" onerror="handleImageError(this)">
                                         </div>
                                     </div>
                                 </div>
@@ -113,7 +113,7 @@
                         <div class="col-6 col-md-3">
                             <div class="card text-center h-100 border-0">
                                 <div class="card-body">
-                                    <h5 class="card-title">Laptops</h5>
+                                    <h5 class="card-title">Portátiles</h5>
                                 </div>
                                 <a href="#laptops" class="stretched-link"></a>
                             </div>
@@ -121,9 +121,9 @@
                         <div class="col-6 col-md-3">
                             <div class="card text-center h-100 border-0">
                                 <div class="card-body">
-                                    <h5 class="card-title">Smartphones</h5>
+                                    <h5 class="card-title">Teléfonos</h5>
                                 </div>
-                                <a href="#smartphones" class="stretched-link"></a>
+                                <a href="#telefonos" class="stretched-link"></a>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
@@ -137,9 +137,9 @@
                         <div class="col-6 col-md-3">
                             <div class="card text-center h-100 border-0">
                                 <div class="card-body">
-                                    <h5 class="card-title">Gaming</h5>
+                                    <h5 class="card-title">Juegos</h5>
                                 </div>
-                                <a href="#gaming" class="stretched-link"></a>
+                                <a href="#juegos" class="stretched-link"></a>
                             </div>
                         </div>
                     </div>
@@ -159,11 +159,11 @@
                                         style="transition-delay: <%= 0.1 * (index + 1) %>s;">
                                         <% if (producto.image) { %>
                                             <img src="<%= producto.image %>" class="card-img-top product-image"
-                                                alt="<%= producto.name %>" loading="lazy">
+                                                alt="<%= producto.name %>" loading="lazy" onerror="handleImageError(this)">
                                             <% } else { %>
-                                                <img src="/images/placeholder-product.jpg"
+                                                <img src="/assets/imagenes/placeholder-image.svg"
                                                     class="card-img-top product-image" alt="Imagen no disponible"
-                                                    loading="lazy">
+                                                    loading="lazy" onerror="handleImageError(this)">
                                                 <% } %>
                                                     <div class="card-body">
                                                         <h5 class="card-title">
@@ -192,8 +192,7 @@
                                                                 </div>
                                                     </div>
                                                     <div class="card-footer bg-white border-0 d-flex flex-column gap-2">
-                                                        <button class="btn btn-outline-primary w-100">Ver
-                                                            Detalles</button>
+                                                        <a href="/productos/<%= producto._id %>" class="btn btn-outline-primary w-100">Ver Detalles</a>
                                                         <!-- Botón de Agregar al Carrito (solo para usuarios logueados) -->
                                                         <button class="btn btn-success add-to-cart-btn auth-only"
                                                             style="display: none;" data-product-id="<%= producto._id %>">
@@ -225,11 +224,11 @@
                                         style="transition-delay: <%= 0.1 * (index + 1) %>s;">
                                         <% if (producto.image) { %>
                                             <img src="<%= producto.image %>" class="card-img-top product-image"
-                                                alt="<%= producto.name %>" loading="lazy">
+                                                alt="<%= producto.name %>" loading="lazy" onerror="handleImageError(this)">
                                             <% } else { %>
-                                                <img src="/images/placeholder-product.jpg"
+                                                <img src="/assets/imagenes/placeholder-image.svg"
                                                     class="card-img-top product-image" alt="Imagen no disponible"
-                                                    loading="lazy">
+                                                    loading="lazy" onerror="handleImageError(this)">
                                                 <% } %>
                                                     <div class="card-body">
                                                         <h5 class="card-title">
@@ -258,10 +257,12 @@
                                                                 </div>
                                                     </div>
                                                     <div class="card-footer bg-white border-0 d-flex flex-column gap-2">
-                                                        <button class="btn btn-outline-primary w-100">Ver
-                                                            Detalles</button>
+                                                        <a href="/productos/<%= producto._id %>" class="btn btn-outline-primary w-100">Ver Detalles</a>
+                                                        <!-- Botón de Agregar al Carrito (solo para usuarios logueados) -->
                                                         <button class="btn btn-success add-to-cart-btn auth-only"
-                                                            style="display: none;" data-product-id="<%= producto._id %>">🛒 Agregar al Carrito</button>
+                                                            style="display: none;" data-product-id="<%= producto._id %>">
+                                                            🛒 Agregar al Carrito
+                                                        </button>
                                                     </div>
                                     </div>
                                 </div>
@@ -279,7 +280,7 @@
             <!--Seccion Telefonos-->
             <section class="py-5 product-section">
                 <div class="container">
-                    <h2 class="text-center mb-5 fade-in-scroll" id="smartphones">Teléfonos</h2>
+                    <h2 class="text-center mb-5 fade-in-scroll" id="telefonos">Teléfonos</h2>
                     <div class="row g-4">
                         <% if (phoneProducts && phoneProducts.length> 0) { %>
                             <% phoneProducts.forEach((producto, index)=> { %>
@@ -288,11 +289,11 @@
                                         style="transition-delay: <%= 0.1 * (index + 1) %>s;">
                                         <% if (producto.image) { %>
                                             <img src="<%= producto.image %>" class="card-img-top product-image"
-                                                alt="<%= producto.name %>" loading="lazy">
+                                                alt="<%= producto.name %>" loading="lazy" onerror="handleImageError(this)">
                                             <% } else { %>
-                                                <img src="/images/placeholder-product.jpg"
+                                                <img src="/assets/imagenes/placeholder-image.svg"
                                                     class="card-img-top product-image" alt="Imagen no disponible"
-                                                    loading="lazy">
+                                                    loading="lazy" onerror="handleImageError(this)">
                                                 <% } %>
                                                     <div class="card-body">
                                                         <h5 class="card-title">
@@ -321,10 +322,12 @@
                                                                 </div>
                                                     </div>
                                                     <div class="card-footer bg-white border-0 d-flex flex-column gap-2">
-                                                        <button class="btn btn-outline-primary w-100">Ver
-                                                            Detalles</button>
+                                                        <a href="/productos/<%= producto._id %>" class="btn btn-outline-primary w-100">Ver Detalles</a>
+                                                        <!-- Botón de Agregar al Carrito (solo para usuarios logueados) -->
                                                         <button class="btn btn-success add-to-cart-btn auth-only"
-                                                            style="display: none;" data-product-id="<%= producto._id %>">🛒 Agregar al Carrito</button>
+                                                            style="display: none;" data-product-id="<%= producto._id %>">
+                                                            🛒 Agregar al Carrito
+                                                        </button>
                                                     </div>
                                     </div>
                                 </div>
@@ -351,11 +354,11 @@
                                         style="transition-delay: <%= 0.1 * (index + 1) %>s;">
                                         <% if (producto.image) { %>
                                             <img src="<%= producto.image %>" class="card-img-top product-image"
-                                                alt="<%= producto.name %>" loading="lazy">
+                                                alt="<%= producto.name %>" loading="lazy" onerror="handleImageError(this)">
                                             <% } else { %>
-                                                <img src="/images/placeholder-product.jpg"
+                                                <img src="/assets/imagenes/placeholder-image.svg"
                                                     class="card-img-top product-image" alt="Imagen no disponible"
-                                                    loading="lazy">
+                                                    loading="lazy" onerror="handleImageError(this)">
                                                 <% } %>
                                                     <div class="card-body">
                                                         <h5 class="card-title">
@@ -384,10 +387,12 @@
                                                                 </div>
                                                     </div>
                                                     <div class="card-footer bg-white border-0 d-flex flex-column gap-2">
-                                                        <button class="btn btn-outline-primary w-100">Ver
-                                                            Detalles</button>
+                                                        <a href="/productos/<%= producto._id %>" class="btn btn-outline-primary w-100">Ver Detalles</a>
+                                                        <!-- Botón de Agregar al Carrito (solo para usuarios logueados) -->
                                                         <button class="btn btn-success add-to-cart-btn auth-only"
-                                                            style="display: none;" data-product-id="<%= producto._id %>">🛒 Agregar al Carrito</button>
+                                                            style="display: none;" data-product-id="<%= producto._id %>">
+                                                            🛒 Agregar al Carrito
+                                                        </button>
                                                     </div>
                                     </div>
                                 </div>
@@ -406,7 +411,7 @@
 
             <section class="py-5 product-section">
                 <div class="container">
-                    <h2 class="text-center mb-5 fade-in-scroll" id="gaming">Gaming</h2>
+                    <h2 class="text-center mb-5 fade-in-scroll" id="juegos">Juegos</h2>
                     <div class="row g-4">
                         <% if (gamingProducts && gamingProducts.length> 0) { %>
                             <% gamingProducts.forEach((producto, index)=> { %>
@@ -415,11 +420,11 @@
                                         style="transition-delay: <%= 0.1 * (index + 1) %>s;">
                                         <% if (producto.image) { %>
                                             <img src="<%= producto.image %>" class="card-img-top product-image"
-                                                alt="<%= producto.name %>" loading="lazy">
+                                                alt="<%= producto.name %>" loading="lazy" onerror="handleImageError(this)">
                                             <% } else { %>
-                                                <img src="/images/placeholder-product.jpg"
+                                                <img src="/assets/imagenes/placeholder-image.svg"
                                                     class="card-img-top product-image" alt="Imagen no disponible"
-                                                    loading="lazy">
+                                                    loading="lazy" onerror="handleImageError(this)">
                                                 <% } %>
                                                     <div class="card-body">
                                                         <h5 class="card-title">
@@ -448,10 +453,12 @@
                                                                 </div>
                                                     </div>
                                                     <div class="card-footer bg-white border-0 d-flex flex-column gap-2">
-                                                        <button class="btn btn-outline-primary w-100">Ver
-                                                            Detalles</button>
+                                                        <a href="/productos/<%= producto._id %>" class="btn btn-outline-primary w-100">Ver Detalles</a>
+                                                        <!-- Botón de Agregar al Carrito (solo para usuarios logueados) -->
                                                         <button class="btn btn-success add-to-cart-btn auth-only"
-                                                            style="display: none;" data-product-id="<%= producto._id %>">🛒 Agregar al Carrito</button>
+                                                            style="display: none;" data-product-id="<%= producto._id %>">
+                                                            🛒 Agregar al Carrito
+                                                        </button>
                                                     </div>
                                     </div>
                                 </div>
@@ -542,9 +549,81 @@
 
         <%- include('./partials/footer.ejs'); %>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                // Función para manejar errores de imagen
+                function handleImageError(img) {
+                    // Primera alternativa: imagen placeholder local
+                    if (!img.dataset.errorTried) {
+                        img.dataset.errorTried = 'true';
+                        img.src = '/assets/imagenes/placeholder-image.svg';
+                        return;
+                    }
+                    
+                    // Segunda alternativa: crear una imagen con canvas igual al placeholder
+                    if (!img.dataset.fallbackTried) {
+                        img.dataset.fallbackTried = 'true';
+                        createFallbackImage(img);
+                        return;
+                    }
+                }
+
+                function createFallbackImage(img) {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 300;
+                    canvas.height = 300;
+                    
+                    // Fondo gris claro
+                    ctx.fillStyle = '#e9ecef';
+                    ctx.fillRect(0, 0, 300, 300);
+                    
+                    // Borde principal
+                    ctx.strokeStyle = '#adb5bd';
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(20, 20, 260, 260);
+                    
+                    // Marco interior
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(20, 20, 260, 260);
+                    
+                    // Dibujar círculo (sol)
+                    ctx.fillStyle = '#adb5bd';
+                    ctx.beginPath();
+                    ctx.arc(100, 80, 15, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Dibujar montañas principales
+                    ctx.fillStyle = '#adb5bd';
+                    ctx.beginPath();
+                    ctx.moveTo(50, 200);
+                    ctx.lineTo(120, 120);
+                    ctx.lineTo(180, 160);
+                    ctx.lineTo(250, 100);
+                    ctx.lineTo(250, 280);
+                    ctx.lineTo(50, 280);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Montañas secundarias (con transparencia)
+                    ctx.fillStyle = 'rgba(173, 181, 189, 0.7)';
+                    ctx.beginPath();
+                    ctx.moveTo(50, 200);
+                    ctx.lineTo(100, 150);
+                    ctx.lineTo(150, 180);
+                    ctx.lineTo(200, 140);
+                    ctx.lineTo(200, 280);
+                    ctx.lineTo(50, 280);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Convertir canvas a data URL y asignar a la imagen
+                    img.src = canvas.toDataURL();
+                }
+            </script>
             <script src="/JS/user.js"></script>
             <script src="/JS/carrito.js"></script>
             <script src="/JS/animations.js"></script>
+            <script src="/JS/imgError.js"></script>
 </body>
 
 </html>

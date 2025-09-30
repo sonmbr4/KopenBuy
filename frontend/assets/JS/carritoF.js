@@ -25,62 +25,107 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Manejo del formulario de pago simulado
-function handlePaymentSubmit(event) {
+async function handlePaymentSubmit(event) {
     event.preventDefault();
 
 
     const form = document.getElementById('checkoutForm');
     const errorBox = document.getElementById('paymentError');
-    const payButton = document.getElementById('payButton');
+    const payButton = document.getElementById('confirmPaymentBtn');
+    
+    console.log('Elementos del formulario:', { form, errorBox, payButton });
+    
+    if (!payButton) {
+        console.error('No se encontró el botón de pago');
+        return;
+    }
 
     // Leer datos
-    const method = form.paymentMethod.value;
-    const cardNumber = document.getElementById('cardNumber').value.trim();
+    const method = form.metodoPago.value;
+    const cardNumberInput = document.getElementById('cardNumber');
+    const cardNumber = cardNumberInput ? cardNumberInput.value.trim() : '';
+    
+    console.log('Método de pago seleccionado:', method);
+    console.log('Número de tarjeta ingresado:', cardNumber);
 
     // Validación
     errorBox.classList.add('d-none');
     errorBox.textContent = '';
 
-    if (!method || (method !== 'visa' && method !== 'mastercard')) {
-        errorBox.textContent = 'Selecciona un método de pago válido (Visa o Mastercard).';
+    if (!method) {
+        errorBox.textContent = 'Por favor selecciona un método de pago.';
         errorBox.classList.remove('d-none');
         return;
     }
 
-    if (!/^\d{16}$/.test(cardNumber)) {
-        errorBox.textContent = 'El número de tarjeta debe contener exactamente 16 dígitos.';
-        errorBox.classList.remove('d-none');
-        return;
+    // Si el método es tarjeta, validar número de tarjeta
+    if (method === 'visa' || method === 'mastercard') {
+        // Eliminar espacios y verificar que sean exactamente 16 dígitos
+        const digitsOnly = cardNumber.replace(/\s+/g, '');
+        console.log('Número de tarjeta (solo dígitos):', digitsOnly);
+        
+        if (digitsOnly.length !== 16 || !/^\d+$/.test(digitsOnly)) {
+            errorBox.textContent = 'El número de tarjeta debe contener exactamente 16 dígitos.';
+            return;
+        }
     }
 
     // Simular procesamiento
-    const originalBtnHTML = payButton.innerHTML;
-    payButton.disabled = true;
-    payButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
-
-    setTimeout(() => {
-        // Cerrar modal
-        const modalEl = document.getElementById('paymentModal');
-        const modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) modal.hide();
-
-        // Restaurar botón
-        payButton.disabled = false;
-        payButton.innerHTML = originalBtnHTML;
-
-        // Limpiar formulario
-        form.reset();
-
-        // Notificar éxito
-        showNotification('Pago simulado completado. ¡Gracias por tu compra!', 'success');
-
-        // Limpiar el carrito real (sin confirmación si existe la función)
+    let originalBtnHTML = '';
+    try {
+        originalBtnHTML = payButton.innerHTML;
+        payButton.disabled = true;
+        payButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
+    } catch (error) {
+        console.error('Error al actualizar el botón de pago:', error);
+        return;
+    }
+    
+    // Obtener datos del formulario para crear el pedido
+    const shippingAddress = {
+        nombre: document.getElementById('nombre')?.value || '',
+        telefono: document.getElementById('telefono')?.value || '',
+        direccion: document.getElementById('direccion')?.value || '',
+        ciudad: document.getElementById('ciudad')?.value || '',
+        codigoPostal: document.getElementById('codigoPostal')?.value || ''
+    };
+    
+    const pedidoData = {
+        shippingAddress,
+        paymentMethod: form.metodoPago.value,
+        items: cart.items || []
+    };
+    
+    console.log('Datos del pedido a enviar:', pedidoData);
+    
+    try {
+        // Enviar el pedido al backend
+        const response = await fetch('/api/pedido', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}` // Asegúrate de que el token esté disponible
+            },
+            body: JSON.stringify(pedidoData)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al procesar el pedido');
+        }
+        
+        const result = await response.json();
+        console.log('Pedido creado:', result);
+        
+        // Si llegamos aquí, el pedido se creó correctamente
+        showNotification('¡Pedido realizado con éxito! Redirigiendo...', 'success');
+        
+        // Limpiar el carrito
         if (typeof clearCartNoConfirm === 'function') {
             clearCartNoConfirm();
         } else if (typeof clearCart === 'function') {
             clearCart();
         } else {
-            // Limpiar visualmente el carrito (solo UI)
             cart.items = [];
             cart.total = 0;
             cart.totalItems = 0;
@@ -89,7 +134,27 @@ function handlePaymentSubmit(event) {
                 renderCartItems();
             }
         }
-    }, 1500);
+        
+        // Cerrar el modal
+        const modalEl = document.getElementById('paymentModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+        
+        // Limpiar formulario
+        form.reset();
+        
+        // Redirigir a la página de pedidos después de 2 segundos
+        setTimeout(() => {
+            window.location.href = '/pedidos';
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Error al crear el pedido:', error);
+        showNotification(error.message || 'Error al procesar el pedido', 'error');
+        payButton.disabled = false;
+        payButton.innerHTML = originalBtnHTML;
+        return;
+    }
 }
 
 /**
@@ -147,3 +212,75 @@ window.renderCartItems = function () {
         }
     }
 };
+
+
+// Mostrar/ocultar sección de tarjeta según método de pago
+document.addEventListener('DOMContentLoaded', function() {
+    const tarjetaSection = document.getElementById('tarjetaSection');
+    const metodoPagoInputs = document.querySelectorAll('input[name="metodoPago"]');
+    
+    function toggleTarjetaSection() {
+        const metodoSeleccionado = document.querySelector('input[name="metodoPago"]:checked').value;
+        tarjetaSection.style.display = (metodoSeleccionado === 'visa' || metodoSeleccionado === 'mastercard') ? 'block' : 'none';
+    }
+    
+    metodoPagoInputs.forEach(input => {
+        input.addEventListener('change', toggleTarjetaSection);
+    });
+    
+    // Inicializar visibilidad
+    toggleTarjetaSection();
+    
+    // Formatear número de tarjeta
+    const cardNumber = document.getElementById('cardNumber');
+    if (cardNumber) {
+        cardNumber.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '');
+            if (value.length > 16) value = value.substring(0, 16);
+            e.target.value = value.replace(/(\d{4})/g, '$1 ').trim();
+        });
+    }
+    
+    // Formatear fecha de vencimiento
+    const cardExpiry = document.getElementById('cardExpiry');
+    if (cardExpiry) {
+        cardExpiry.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 4) value = value.substring(0, 4);
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+            }
+            e.target.value = value;
+        });
+    }
+});
+
+// Función para abrir el modal de pago
+function proceedToCheckout() {
+    const cartItems = document.querySelectorAll('.cart-item');
+    if (cartItems.length === 0) {
+        showAlert('warning', 'Tu carrito está vacío');
+        return;
+    }
+    
+    const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    paymentModal.show();
+}
+
+// Función para mostrar alertas
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+    alertDiv.role = 'alert';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(alertDiv);
+    
+    // Auto cerrar después de 5 segundos
+    setTimeout(() => {
+        const bsAlert = new bootstrap.Alert(alertDiv);
+        bsAlert.close();
+    }, 5000);
+}

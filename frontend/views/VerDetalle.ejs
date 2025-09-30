@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tienda de tecnología con los mejores productos al mejor precio">
+    <title>Kopen Buy - Tecnología de Última Generación</title>
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+    <%- include('./partials/header.ejs'); %>
+        <main class="landing-container">
+            <section class="container py-5">
+                <div class="row g-5 align-items-start">
+                    <!-- Imagen del producto -->
+                    <div class="col-lg-6 col-md-6 mb-4 mb-md-0">
+                        <div class="product-image-container position-relative">
+                            <div class="bg-white p-4 rounded-3 shadow-sm d-flex justify-content-center align-items-center"
+                                style="min-height:400px;">
+                                <img src="<%= producto.image || '/assets/imagenes/placeholder-image.svg' %>"
+                                    alt="<%= producto.name %>" class="img-fluid rounded-2"
+                                    style="max-height:380px; object-fit:contain;" id="productImage"
+                                    onerror="handleImageError(this)">
+                            </div>
+                            <!-- Badge de estado del stock -->
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span
+                                    class="badge fs-6 <%= producto.stock <= 0 ? 'bg-danger' : (producto.stock < 10 ? 'bg-warning text-dark' : 'bg-success') %>">
+                                    <%= producto.stock <=0 ? 'Agotado' : (producto.stock < 10 ? 'Pocas unidades'
+                                        : 'Disponible' ) %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del producto -->
+                    <div class="col-lg-6 col-md-6">
+                        <div class="product-info">
+                            <div class="mb-3">
+                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                                    <i class="bi bi-tag me-1"></i>
+                                    <%= producto.category %>
+                                </span>
+                            </div>
+
+                            <h1 class="display-6 fw-bold mb-3 text-dark">
+                                <%= producto.name %>
+                            </h1>
+
+                            <div class="price-section mb-4">
+                                <h2 class="text-success fw-bold mb-2">
+                                    $<%= producto.price ? producto.price.toLocaleString('es-CO') : '0' %>
+                                        <small class="text-muted fs-6">COP</small>
+                                </h2>
+                            </div>
+
+                            <div class="product-description mb-4">
+                                <h5 class="fw-semibold mb-3">Descripción</h5>
+                                <p class="text-secondary lh-base">
+                                    <%= producto.description || 'Sin descripción disponible' %>
+                                </p>
+                            </div>
+
+                            <div class="product-features mb-4">
+                                <h6 class="fw-semibold mb-3">Características</h6>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            <small>Garantía oficial</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            <small>Envío seguro</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            <small>Devolución fácil</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stock-info mb-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="fw-semibold">Stock disponible:</span>
+                                    <span
+                                        class="fw-bold <%= producto.stock <= 0 ? 'text-danger' : (producto.stock < 10 ? 'text-warning' : 'text-success') %>">
+                                        <%= producto.stock %> unidades
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Botones de acción -->
+                            <div class="action-buttons">
+                                <% if (producto.stock> 0) { %>
+                                    <button class="btn btn-success btn-lg px-4 flex-fill add-to-cart-btn auth-only"
+                                        style="display: none;" data-product-id="<%= producto._id %>">
+                                        <i class="bi bi-cart-plus me-2"></i>Agregar al carrito
+                                    </button>
+                                    <% } else { %>
+                                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>
+                                            <div>
+                                                <strong>Producto agotado</strong><br>
+                                                <small>Te notificaremos cuando esté disponible nuevamente</small>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-primary btn-lg w-100">
+                                            <i class="bi bi-bell me-2"></i>Notificarme cuando esté disponible
+                                        </button>
+                                        <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Productos relacionados -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="related-products">
+                            <h3 class="mb-4 fw-bold">
+                            </h3>
+                            <div class="row g-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <%- include('./partials/footer.ejs'); %>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="/JS/user.js"></script>
+            <script src="/JS/carrito.js"></script>
+            <script src="/JS/animations.js"></script>
+            <script src="/JS/imgError.js"></script>
+</body>
+
+</html>

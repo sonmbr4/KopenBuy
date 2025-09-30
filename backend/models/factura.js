@@ -1,16 +1,50 @@
-// Modelo de Factura
-// Define la estructura de la colección de facturas en MongoDB
 const mongoose = require('mongoose');
 
-// Esquema de la factura
 const facturaSchema = new mongoose.Schema({
-  // Referencia al pedido asociado
-  pedido: { type: mongoose.Schema.Types.ObjectId, ref: 'Pedido', required: true },
-  // Fecha de emisión de la factura
-  fecha: { type: Date, default: Date.now },
-  // Total de la factura
-  total: { type: Number, required: true }
+  numeroFactura: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  pedido: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Pedido', 
+    required: true 
+  },
+  usuario: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usuario',
+    required: true
+  },
+  fecha: { 
+    type: Date, 
+    default: Date.now 
+  },
+  total: { 
+    type: Number, 
+    required: true 
+  },
+  estado: {
+    type: String,
+    enum: ['pendiente', 'pagada', 'vencida', 'cancelada'],
+    default: 'pendiente'
+  },
+  detallesPago: {
+    metodo: String,
+    referencia: String,
+    fechaPago: Date
+  },
+  productos: [{
+    producto: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true
+    },
+    nombre: String,
+    precio: Number,
+    cantidad: Number,
+    subtotal: Number
+  }]
 });
 
-// Exporta el modelo para usarlo en controladores y rutas
 module.exports = mongoose.model('Factura', facturaSchema);
