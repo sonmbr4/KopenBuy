@@ -110,14 +110,16 @@
                                         <tr>
                                             <td>
                                                 <% if (product.image) { %>
-                                                    <img src="<%= product.image %>" alt="Imagen"style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">
-                                                    <% } else { %>
-                                                        <img src="../../assets/imagenes/placeholder-image.svg"
-                                                            class="card-img-top product-image"
-                                                            alt="Imagen no disponible" loading="lazy"
-                                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;"
-                                                            onerror="handleImageError(this)">
-                                                        <% } %>
+                                                    <img src="/uploads/<%= product.image.includes('/') ? product.image.split('/').pop() : product.image %>" 
+                                                    alt="<%= product.name %>" 
+                                                    class="img-thumbnail" 
+                                                    style="width: 50px; height: 50px; object-fit: cover;">
+                                                <% } else { %>
+                                                    <div class="bg-light d-flex align-items-center justify-content-center" 
+                                                         style="width: 50px; height: 50px;">
+                                                        <i class="bi bi-image text-muted"></i>
+                                                    </div>
+                                                <% } %>
                                             </td>
                                             <td>
                                                 <%= product.name %>
@@ -236,7 +238,7 @@
                                            name="image" 
                                            id="imageUpload" 
                                            class="form-control d-none" 
-                                           accept="image/jpeg, image/png, image/webp"
+                                           accept="image/*"
                                            onchange="previewImage(event)">
                                 </div>
                             </div>
@@ -260,9 +262,16 @@
                     <h5 class="modal-title">Detalles del Producto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="productDetailsContent">
-                    <!-- Los detalles se cargarán aquí dinámicamente -->
-                    <p>Cargando información...</p>
+                <div class="modal-body">
+                    <div class="text-center mb-4" id="productImageContainer">
+                        <img id="productDetailImage" src="#" 
+                             alt="Imagen del producto" 
+                             class="img-fluid rounded" 
+                             style="max-height: 200px; display: none;">
+                    </div>
+                    <div id="productDetailsContent">
+                        <!-- Los detalles se cargarán aquí dinámicamente -->
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -382,7 +391,7 @@
     <script src="/JS/modalsAdmin.js"></script>
     <script src="/JS/imgError.js"></script>
     <script src="/JS/adminClient.js"></script>
-    
+    <script src="/assets/JS/image-upload.js"></script>
 
 </body>
 

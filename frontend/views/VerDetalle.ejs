@@ -21,10 +21,9 @@
                         <div class="product-image-container position-relative">
                             <div class="bg-white p-4 rounded-3 shadow-sm d-flex justify-content-center align-items-center"
                                 style="min-height:400px;">
-                                <img src="<%= producto.image || '/assets/imagenes/placeholder-image.svg' %>"
-                                    alt="<%= producto.name %>" class="img-fluid rounded-2"
-                                    style="max-height:380px; object-fit:contain;" id="productImage"
-                                    onerror="handleImageError(this)">
+                                <img src="/uploads/<%= producto.image.includes('/') ? producto.image.split('/').pop() : producto.image %>"
+                                                alt="<%= producto.name %>" class="card-img-top"
+                                                onerror="this.onerror=null; this.src='/assets/imagenes/placeholder-image.svg'">
                             </div>
                             <!-- Badge de estado del stock -->
                             <div class="position-absolute top-0 end-0 m-3">
