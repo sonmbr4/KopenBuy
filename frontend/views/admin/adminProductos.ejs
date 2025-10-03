@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de administración de Kopen Buy - Gestión de productos, pedidos y clientes">
+    <title>Panel de Administración - Kopen Buy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/CSS/admin.css">
+    <style>
+
+    </style>
+</head>
+
+<body class="bg-light">
+    <header class="admin-header sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <button class="btn btn-link d-md-none me-2 text-white" id="sidebarToggle">
+                    <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+                </button>
+                <a class="navbar-brand fw-bold" href="/">
+                    <i class="bi bi-bag-check me-2"></i>Kopen Buy Admin
+                </a>
+                <div class="d-flex align-items-center ms-auto">
+                    <div class="dropdown">
+                        <a href="/" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                            id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-2 fs-5"></i>
+                            <span>Administrador</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li>
+                                <a href="#" onclick="configuracion()"  class="dropdown-item" data-bs-toggle="offcanvas"
+                                    data-bs-target="#profileConfigOffcanvas">
+                                    <i class="bi bi-gear me-2"></i> Configuración
+                                </a>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><button id="logout-btn" onclick="logout()" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 col-md-3 sidebar p-0" id="sidebar">
+                <div class="text-center p-4 border-bottom">
+                    <i class="bi bi-person-circle fs-1 text-success"></i>
+                    <h5 class="mt-2 mb-1">Administrador</h5>
+                    <small class="text-muted">admin@kopenbuy.com</small>
+                </div>
+                <div class="list-group list-group-flush rounded-0">
+                    <a href="/admin/productos" class="list-group-item list-group-item-action active">
+                        <i class="bi bi-boxes me-2"></i> Productos
+                    </a>
+                    <a href="/admin/pedidos" class="list-group-item list-group-item-action">
+                        <i class="bi bi-cart me-2"></i> Pedidos
+                    </a>
+                    <a href="/admin/clientes" class="list-group-item list-group-item-action">
+                        <i class="bi bi-people me-2"></i> Clientes
+                    </a>
+                    <a href="/admin/estadisticas" class="list-group-item list-group-item-action">
+                        <i class="bi bi-graph-up me-2"></i> Estadísticas
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 col-md-9 ms-sm-auto px-md-4 py-4 main-content" id="mainContent">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h2 class="h3 fw-bold text-success">
+                        <i class="bi bi-box-seam me-2"></i>Gestión de Productos
+                    </h2>
+                    <button type="button" class="btn btn-success mb=3" data-bs-toggle="modal"
+                        data-bs-target="#addProductModal">
+                        <i class="bi bi-plus-circle me-1"></i> Nuevo Producto
+                    </button>
+                </div>
+
+                <!-- Products Table -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-success">
+                                    <tr>
+                                        <th>Imagen</th> <!-- Nueva columna -->
+                                        <th>Producto</th>
+                                        <th>Categoría</th>
+                                        <th class="text-center">Stock</th>
+                                        <th>Precio</th>
+                                        <th>Estado</th>
+                                        <th class="text-end pe-4">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTable">
+                                    <% products.forEach(product=> { %>
+                                        <tr>
+                                            <td>
+                                                <% if (product.image) { %>
+                                                    <img src="/uploads/<%= product.image.includes('/') ? product.image.split('/').pop() : product.image %>" 
+                                                    alt="<%= product.name %>" 
+                                                    class="img-thumbnail" 
+                                                    style="width: 50px; height: 50px; object-fit: cover;">
+                                                <% } else { %>
+                                                    <div class="bg-light d-flex align-items-center justify-content-center" 
+                                                         style="width: 50px; height: 50px;">
+                                                        <i class="bi bi-image text-muted"></i>
+                                                    </div>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <%= product.name %>
+                                            </td>
+                                            <td>
+                                                <%= product.category || "Sin categoría" %>
+                                            </td>
+                                            <td class="text-center">
+                                                <%= product.stock || 0 %>
+                                            </td>
+                                            <td>$<%= product.price ? Number(product.price).toFixed(2) : '0.00' %>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success">Activo</span>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <!--VER-->
+                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#viewProductModal"
+                                                    onclick="loadProductDetails('<%= product._id %>')"><i
+                                                        class="bi bi-eye"></i></button>
+                                                <!--EDITAR-->
+                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#editProductModal"
+                                                    onclick="loadEditForm('<%= product._id %>')"><i
+                                                        class="bi bi-pencil"></i></button>
+                                                <!--ELIMINAR-->
+                                                <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteProductModal"
+                                                    onclick="setProductToDelete('<%= product._id %>', '<%= product.name %>')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Product pagination">
+                    <ul class="pagination justify-content-center" id="paginationContainer">
+                        <!-- Los botones de paginación se generarán dinámicamente con JavaScript -->
+                    </ul>
+                </nav>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- === MODALES === -->
+    <!--MODAL PARA AGREGAR PRODUCTO -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulario -->
+                    <form id="addProductForm" action="/admin/productos" method="POST" enctype="multipart/form-data">
+                        <!--Nombre-->
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <!--Categoría-->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Categoría</label>
+                            <select class="form-select" name="category" required>
+                                <option value="" disabled selected>Seleccione una categoría</option>
+                                <% if (categorias && categorias.length> 0) { %>
+                                    <% categorias.forEach(function(categoria) { %>
+                                        <option value="<%= categoria.nombre %>">
+                                            <%= categoria.nombre %>
+                                        </option>
+                                        <% }); %>
+                                            <% } %>
+                            </select>
+                        </div>
+                        <!--Precio-->
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Precio</label>
+                            <input type="number" class="form-control" name="price" step="0.01" required>
+                        </div>
+                        <!--Descripción-->
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descripción</label>
+                            <textarea class="form-control" name="description"></textarea>
+                        </div>
+                        <!--Stock-->
+                        <div>
+                            <label for="stock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" name="stock" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="imageUpload" class="form-label">Imagen del producto</label>
+                            <div class="image-upload-container">
+                                <div class="image-preview-wrapper" id="imagePreviewContainer">
+                                    <div class="position-relative d-inline-block">
+                                        <img id="imagePreview" src="#" alt="Vista previa de la imagen" class="img-thumbnail">
+                                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle" 
+                                                onclick="removeImage()" title="Eliminar imagen">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="upload-area" id="uploadArea">
+                                    <i class="bi bi-cloud-arrow-up fs-1 text-muted mb-2"></i>
+                                    <p class="mb-2">Arrastra tu imagen aquí o haz clic para seleccionar</p>
+                                    <small class="text-muted">Formatos soportados: JPG, PNG, WEBP (Máx. 2MB)</small>
+                                    <input type="file" 
+                                           name="image" 
+                                           id="imageUpload" 
+                                           class="form-control d-none" 
+                                           accept="image/*"
+                                           onchange="previewImage(event)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" form="addProductForm" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA VER DETALLE -->
+    <div class="modal fade" id="viewProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles del Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4" id="productImageContainer">
+                        <img id="productDetailImage" src="#" 
+                             alt="Imagen del producto" 
+                             class="img-fluid rounded" 
+                             style="max-height: 200px; display: none;">
+                    </div>
+                    <div id="productDetailsContent">
+                        <!-- Los detalles se cargarán aquí dinámicamente -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA EDITAR PRODUCTO -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulario de edición -->
+                    <form id="editProductForm">
+                        <input type="hidden" id="editProductId" name="id"> <!-- Campo oculto para el ID -->
+                        <div class="mb-3">
+                            <label for="editName" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="editName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPrice" class="form-label">Precio</label>
+                            <input type="number" class="form-control" id="editPrice" name="price" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategory" class="form-label">Categoría</label>
+                            <select class="form-select" id="editCategory" name="category" required>
+                                <option value="" disabled>Seleccione una categoría</option>
+                                <% if (categorias && categorias.length> 0) { %>
+                                    <% categorias.forEach(function(categoria) { %>
+                                        <option value="<%= categoria.nombre %>">
+                                            <%= categoria.nombre %>
+                                        </option>
+                                        <% }); %>
+                                            <% } %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editStock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="editStock" name="stock" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDescription" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="editDescription" name="description"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="editProductForm" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA ELIMINAR PRODUCTO -->
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de eliminar el producto <strong id="productNameToDelete">-</strong>?</p>
+                    <p class="text-danger">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                        Sí, Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <footer class="footer bg-dark text-white py-4 mt-4">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="bi bi-bag-check text-success me-2"></i>Kopen Buy Admin</h5>
+                    <p class="mb-0 text-white-50">Panel de administración para la tienda de tecnología Kopen Buy</p>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="mb-3">Enlaces</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="PaginaPrincipal.html" class="text-white-50 text-decoration-none"><i
+                                    class="bi bi-arrow-right-short text-success"></i> Tienda Principal</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none"><i
+                                    class="bi bi-arrow-right-short text-success"></i> Documentación</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="mb-3">Soporte</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="bi bi-envelope text-success me-2"></i> soporte@kopenbuy.com</li>
+                        <li class="mb-2"><i class="bi bi-telephone text-success me-2"></i> +123 456 7890</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 bg-success bg-opacity-25">
+            <div class="text-center">
+                <p class="mb-0 small text-white-50">&copy; 2025 Kopen Buy. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/JS/modalsAdmin.js"></script>
+    <script src="/JS/imgError.js"></script>
+    <script src="/JS/adminClient.js"></script>
+    <script src="/assets/JS/image-upload.js"></script>
+
+</body>
+
+</html>

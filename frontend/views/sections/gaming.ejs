@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tienda de tecnología con los mejores productos al mejor precio">
+    <title>Kopen Buy - Tecnología de Última Generación</title>
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+
+
+
+<body>
+    <!-- Navbar similar pero con Gaming activo -->
+    <main>
+        <%- include('../partials/header.ejs'); %>
+
+        <!-- Productos -->
+        <section class="py-5 product-section">
+                <div class="container">
+                    <h2 class="text-center mb-5 fade-in-scroll" id="laptops">Gaming</h2>
+                    <div class="row g-4">
+                        <% if (productosGaming && productosGaming.length> 0) { %>
+                            <% productosGaming.forEach((producto, index)=> { %>
+                                <div class="col-md-6 col-lg-3">
+                                    <div class="card product-card fade-in-scroll"
+                                        style="transition-delay: <%= 0.1 * (index + 1) %>s;">
+                                        <% if (producto.image) { %>
+                                            <img src="<%= producto.image %>" class="card-img-top product-image"
+                                                alt="<%= producto.name %>" loading="lazy">
+                                            <% } else { %>
+                                                <img src="/assets/imagenes/placeholder-image.svg"
+                                                    class="card-img-top product-image" alt="Imagen no disponible"
+                                                    loading="lazy" onerror="handleImageError(this)">
+                                                <% } %>
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">
+                                                            <%= producto.name %>
+                                                        </h5>
+                                                        <% if (producto.category) { %>
+                                                            <p class="text-primary mb-2"><small>
+                                                                    <%= producto.category %>
+                                                                </small></p>
+                                                            <% } %>
+                                                                <p class="card-text text-muted">
+                                                                    <%= producto.description
+                                                                        || 'Sin descripción disponible' %>
+                                                                </p>
+                                                                <div
+                                                                    class="d-flex justify-content-between align-items-center">
+                                                                    <span
+                                                                        class="badge <%= producto.stock <= 0 ? 'bg-danger' : (producto.stock < 10 ? 'bg-warning' : 'bg-success') %>">
+                                                                        <%= producto.stock <=0 ? 'Agotado' :
+                                                                            (producto.stock < 10 ? 'Casi Agotado'
+                                                                            : 'En Stock' ) %>
+                                                                    </span>
+                                                                    <span class="fw-bold">$<%= producto.price ?
+                                                                            producto.price.toLocaleString() : '0' %>
+                                                                    </span>
+                                                                </div>
+                                                    </div>
+                                                    <div class="card-footer bg-white border-0 d-flex flex-column gap-2">
+                                                        <a href="/productos/<%= producto._id %>" class="btn btn-outline-primary w-100">Ver Detalles</a>
+                                                        <!-- Botón de Agregar al Carrito (solo para usuarios logueados) -->
+                                                        <button class="btn btn-success add-to-cart-btn auth-only"
+                                                            style="display: none;" data-product-id="<%= producto._id %>">
+                                                            🛒 Agregar al Carrito
+                                                        </button>
+                                                    </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                                    <% } else { %>
+                                        <div class="col-12 text-center">
+                                            <p>No hay computadoras disponibles en este momento.</p>
+                                        </div>
+                                        <% } %>
+                    </div>
+                </div>
+            </section>
+
+        
+    </main>
+    <%- include('../partials/footer.ejs'); %>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="/JS/user.js"></script>
+        <script src="/JS/carrito.js"></script>
+        <script src="/JS/animations.js"></script>
+        <script src="/JS/imgError.js"></script>
+</body>
+
+</html>
