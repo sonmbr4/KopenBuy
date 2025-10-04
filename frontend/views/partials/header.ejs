@@ -107,17 +107,18 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" name="password" required>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember-me">
-                        <label class="form-check-label" for="remember-me">Recordarme</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="password" id="loginPassword" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="loginPassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="alert alert-danger d-none" id="loginError"></div>
                     <div class="alert alert-success d-none" id="loginSuccess"></div>
                 </form>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
                     <button type="button" class="btn btn-primary w-100" onclick="loginUser()">Ingresar</button>
                 </div>
             </div>
@@ -149,18 +150,27 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" name="password" minlength="6" required>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="password" id="registerPassword" minlength="6" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="registerPassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Confirmar Contraseña</label>
-                        <input type="password" class="form-control" name="confirmPassword" required>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="confirmPassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="alert alert-danger d-none" id="registerError"></div>
                     <div class="alert alert-success d-none" id="registerSuccess"></div>
                 </form>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bd-dismiss="modal">Cancelar</button>
-
+                    <button type="button" class="btn btn-secondary w-100" data-bd-dismiss="modal" aria-label="Close">Cancelar</button>
                     <button type="submit" class="btn btn-primary w-100" onclick="registerUser()">Crear cuenta</button>
                 </div>
             </div>
@@ -168,5 +178,28 @@
     </div>
 </div>
 
+
+<!-- Script para mostrar/ocultar contraseña -->
+<script>
+    // Función para alternar la visibilidad de la contraseña
+    document.addEventListener('DOMContentLoaded', function() {
+        // Agregar evento de clic a todos los botones de mostrar/ocultar contraseña
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const passwordInput = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+                
+                // Cambiar el tipo de input entre password y text
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Cambiar el ícono
+                icon.classList.toggle('bi-eye');
+                icon.classList.toggle('bi-eye-slash');
+            });
+        });
+    });
+</script>
 
 <!-- Los scripts se cargan en cada página individual para evitar conflictos -->

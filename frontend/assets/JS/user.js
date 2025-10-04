@@ -118,50 +118,100 @@ async function loadCartInfo() {
 //-- FUNCION DE REGISTRAR --
 
 
-async function registerUser(){
+async function registerUser() {
     const form = document.getElementById('registerForm');
     const errorDiv = document.getElementById('registerError');
     const successDiv = document.getElementById('registerSuccess');
 
-    const formData = {
-        nombre: form.nombre.value,
-        email: form.email.value,
-        password: form.password.value,
-        telefono: form.telefono.value
-    };
+    // Obtener y limpiar los valores
+    const nombre = form.nombre.value.trim();
+    const email = form.email.value.trim();
+    const password = form.password.value.trim();
+    const confirmPassword = form.confirmPassword.value.trim();
+    const telefono = form.telefono.value.trim();
 
-    //Validaciones basicas
-    if (form.password.value !== form.confirmPassword.value){
-        showError('Las contrasenas no coinciden');
+    // Validar nombre
+    if (!nombre) {
+        showError('Por favor ingresa tu nombre completo');
         return;
     }
 
-    try{
+    // Validar formato de correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+        showError('Por favor ingresa tu correo electrónico');
+        return;
+    } else if (!emailRegex.test(email)) {
+        showError('Por favor ingresa un correo electrónico válido');
+        return;
+    }
+
+    // Validar teléfono (solo números, mínimo 8 dígitos)
+    const telefonoRegex = /^[0-9]{8,15}$/;
+    if (!telefono) {
+        showError('Por favor ingresa tu número de teléfono');
+        return;
+    } else if (!telefonoRegex.test(telefono)) {
+        showError('El número de teléfono debe contener solo números y tener entre 8 y 15 dígitos');
+        return;
+    }
+
+    // Validar contraseña
+    if (!password) {
+        showError('Por favor ingresa una contraseña');
+        return;
+    } else if (password.length < 6) {
+        showError('La contraseña debe tener al menos 6 caracteres');
+        return;
+    }
+
+    // Validar confirmación de contraseña
+    if (password !== confirmPassword) {
+        showError('Las contraseñas no coinciden');
+        return;
+    }
+
+    const formData = {
+        nombre: nombre,
+        email: email,
+        password: password,
+        telefono: telefono
+    };
+
+    try {
         const response = await fetch('/usuario/register', {
             method: 'POST',
-            headers:{
-                'Content-Type':'application/json'
+            headers: {
+                'Content-Type': 'application/json'
             },
-            body:JSON.stringify(formData)
+            body: JSON.stringify(formData)
         });
+
+        // Verificar si la respuesta es exitosa (código 2xx)
+        if (!response.ok) {
+            const errorData = await response.json();
+            showError(errorData.message || 'Error en el registro. Por favor, inténtalo de nuevo.');
+            return;
+        }
 
         const data = await response.json();
 
-        if(data.success){
-            showSuccess('Registro Exitoso Redirigiendo...');
-            //Guardar Token en localStorage
+        if (data.success) {
+            showSuccess('¡Registro exitoso! Redirigiendo...');
+            // Guardar Token en localStorage
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
 
-            //Redirigir despues de 3 segundos
+            // Redirigir después de 2 segundos
             setTimeout(() => {
                 window.location.reload();
-            }, 3000);
-        }else {
-            showError(data.message);
+            }, 2000);
+        } else {
+            showError(data.message || 'Error en el registro. Por favor, verifica los datos e inténtalo de nuevo.');
         }
-    }catch (error){
-        showError('Error de conexion');
+    } catch (error) {
+        console.error('Error en el registro:', error);
+        showError('Error de conexión. Por favor, verifica tu conexión a internet e inténtalo de nuevo.');
     }
 }
 
@@ -192,13 +242,40 @@ async function loginUser(){
     const form = document.getElementById('loginForm');
     const errorDiv = document.getElementById('loginError');
     const successDiv = document.getElementById('loginSuccess');
+    const password = form.password.value.trim();
+    const email = form.email.value.trim();
+
+    // Validar que el correo no esté vacío
+    if (!email) {
+        showLoginError('Por favor ingresa tu correo electrónico');
+        return;
+    }
+
+    // Validar formato de correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showLoginError('Por favor ingresa un correo electrónico válido');
+        return;
+    }
+
+    // Validar que la contraseña no esté vacía
+    if (!password) {
+        showLoginError('Por favor ingresa tu contraseña');
+        return;
+    }
+
+    // Validar longitud mínima de la contraseña
+    if (password.length < 6) {
+        showLoginError('La contraseña debe tener al menos 6 caracteres');
+        return;
+    }
 
     const formData = {
-        email: form.email.value,
-        password: form.password.value
+        email: email,
+        password: password
     };
 
-    try{
+    try {
         const response = await fetch('/usuario/login', {
             method: 'POST',
             headers: {
@@ -207,10 +284,17 @@ async function loginUser(){
             body: JSON.stringify(formData)
         });
 
+        // Verificar si la respuesta es exitosa (código 2xx)
+        if (!response.ok) {
+            const errorData = await response.json();
+            showLoginError(errorData.message || 'Error en las credenciales. Por favor, inténtalo de nuevo.');
+            return;
+        }
+
         const data = await response.json();
         console.log('Respuesta del servidor:', data); // Para depuración
 
-        if(data.success && data.user){
+        if (data.success && data.user) {
             showLoginSuccess('¡Inicio de sesión exitoso!');
 
             // Guardar token y datos del usuario
@@ -230,11 +314,12 @@ async function loginUser(){
                     $('#loginModal').modal('hide');
                 }
             }, 1000);
-        }else {
-            showLoginError('Error de conexion');
+        } else {
+            showLoginError(data.message || 'Error en las credenciales. Por favor, verifica e intenta de nuevo.');
         }
     } catch (error) {
-        showLoginError('Error de conexion')
+        console.error('Error al iniciar sesión:', error);
+        showLoginError('Error de conexión. Por favor, verifica tu conexión a internet e inténtalo de nuevo.');
     }
 }
 
