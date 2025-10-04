@@ -66,6 +66,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Ruta para cambiar la contraseña del usuario
+// (movido más abajo, después de importar Usuario)
+
 
 //Configuracion EJS como motor
 app.set('view engine', 'ejs');
@@ -175,6 +178,47 @@ app.use('/api/pedido', pedidoRoutes);
 
 // Importar el modelo de Usuario al inicio del archivo
 const Usuario = require('./models/usuario');
+
+// Ruta para cambiar la contraseña del usuario
+app.post('/api/change-password', authMiddleware, async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmNewPassword } = req.body || {};
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      return res.status(400).json({ success: false, message: 'Todos los campos son requeridos.' });
+    }
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ success: false, message: 'La nueva contraseña y su confirmación no coinciden.' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ success: false, message: 'La nueva contraseña debe tener al menos 6 caracteres.' });
+    }
+
+    // Cargar usuario con contraseña
+    const usuario = await Usuario.findById(req.user._id);
+    if (!usuario) {
+      return res.status(404).json({ success: false, message: 'Usuario no encontrado.' });
+    }
+
+    const isMatch = await usuario.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'La contraseña actual es incorrecta.' });
+    }
+
+    const isSameAsCurrent = await usuario.comparePassword(newPassword);
+    if (isSameAsCurrent) {
+      return res.status(400).json({ success: false, message: 'La nueva contraseña no puede ser igual a la actual.' });
+    }
+
+    usuario.password = newPassword; // pre-save hook encripta
+    await usuario.save();
+
+    return res.json({ success: true, message: 'Contraseña actualizada correctamente.' });
+  } catch (error) {
+    console.error('Error al cambiar la contraseña:', error);
+    return res.status(500).json({ success: false, message: 'Error al cambiar la contraseña.' });
+  }
+});
 
 // Ruta para actualizar el perfil del usuario
 app.post('/api/update-profile', authMiddleware, async (req, res) => {
