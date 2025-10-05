@@ -26,8 +26,10 @@
                                     <div class="card product-card fade-in-scroll"
                                         style="transition-delay: <%= 0.1 * (index + 1) %>s;">
                                         <% if (producto.image) { %>
-                                            <img src="<%= producto.image %>" class="card-img-top product-image"
-                                                alt="<%= producto.name %>" loading="lazy">
+                                            <img src="/uploads/<%= producto.image.includes('/') ? producto.image.split('/').pop() : producto.image %>"
+                                                alt="<%= producto.name %>" class="card-img-top"
+                                                style="height: 200px; object-fit: cover;"
+                                                onerror="this.onerror=null; this.src='/assets/imagenes/placeholder-image.svg'">
                                             <% } else { %>
                                                 <img src="/assets/imagenes/placeholder-image.svg"
                                                     class="card-img-top product-image" alt="Imagen no disponible"

@@ -84,6 +84,9 @@ function createNotificationContainer() {
  * @param {number} quantity - Cantidad a agregar (por defecto 1)
  */
 async function addToCart(productId, quantity = 1) {
+    let button;
+    let originalText;
+    
     try {
         // Verificar si el usuario está logueado
         const token = localStorage.getItem('token');
@@ -93,8 +96,8 @@ async function addToCart(productId, quantity = 1) {
         }
 
         // Mostrar indicador de carga en el botón
-        const button = document.querySelector(`[data-product-id="${productId}"]`);
-        const originalText = button.innerHTML;
+        button = document.querySelector(`[data-product-id="${productId}"]`);
+        originalText = button.innerHTML;
         button.disabled = true;
         button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Agregando...';
 
@@ -131,10 +134,9 @@ async function addToCart(productId, quantity = 1) {
         showNotification(error.message || 'Error al agregar el producto al carrito', 'error');
     } finally {
         // Restaurar el botón
-        const button = document.querySelector(`[data-product-id="${productId}"]`);
         if (button) {
             button.disabled = false;
-            button.innerHTML = originalText;
+            button.innerHTML = originalText || 'Agregar al carrito';
         }
     }
 }
@@ -238,8 +240,11 @@ function createCartItemElement(item) {
     itemDiv.innerHTML = `
         <div class="row align-items-center">
             <div class="col-md-2">
-                <img src="${item.product.image || '/images/placeholder-product.jpg'}" 
-                     class="img-fluid rounded" alt="${item.product.name}">
+                <img src="/uploads/${item.product.image ? (item.product.image.includes('/') ? item.product.image.split('/').pop() : item.product.image) : 'placeholder-image.svg'}" 
+                    class="img-fluid rounded" 
+                     alt="${item.product.name}"
+                    style="max-height: 100px; max-width: 100%; width: auto; height: auto; object-fit: contain; object-position: center;"
+                    okeonerror="this.onerror=null; this.src='/assets/imagenes/placeholder-image.svg'">
             </div>
             <div class="col-md-4">
                 <h6 class="mb-1">${item.product.name}</h6>
