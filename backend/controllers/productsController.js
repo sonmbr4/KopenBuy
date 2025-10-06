@@ -36,11 +36,28 @@ exports.getFeaturedProducts = async (limit = 4) => {
 // Ver todos los productos (READ)
 exports.getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const { categoria, stockMaximo } = req.query;
+    
+    // Construir el filtro
+    const filter = {};
+    
+    // Filtrar por categoría si se especifica
+    if (categoria && categoria !== 'todas') {
+      filter.category = categoria;
+    }
+    
+    // Filtrar por stock máximo si se especifica
+    if (stockMaximo && !isNaN(stockMaximo)) {
+      filter.stock = { $lte: parseInt(stockMaximo) };
+    }
+    
+    const products = await Product.find(filter).sort({ createdAt: -1 });
     const categorias = await Categoria.find();
+    
     res.render('admin/adminProductos', {
       products,
-      categorias
+      categorias,
+      filters: { categoria, stockMaximo }
     });
   } catch (error) {
     console.error('Error al cargar los productos:', error);

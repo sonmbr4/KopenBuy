@@ -1,6 +1,7 @@
 const Pedido = require('../models/pedidos');
 const Factura = require('../models/factura');
 const Cart = require('../models/cart');
+const Product = require('../models/products');
 const mongoose = require('mongoose');
 
 exports.createPedido = async (req, res) => {
@@ -14,25 +15,45 @@ exports.createPedido = async (req, res) => {
       return res.status(400).json({ success: false, message: 'El carrito está vacío.' });
     }
 
-    // 2. Preparar productos para el pedido
-    const productosPedido = cart.items.map(item => {
+    // 2. Verificar stock y preparar productos para el pedido
+    const productosPedido = [];
+    
+    // Primero verificar que todo el stock esté disponible
+    for (const item of cart.items) {
       if (!item.product) {
         throw new Error('Uno o más productos no tienen información válida');
       }
       
-      // Usar item.product.name según el modelo de Producto
+      const product = await Product.findById(item.product._id);
+      if (!product) {
+        throw new Error(`Producto ${item.product._id} no encontrado`);
+      }
+      
+      if (product.stock < item.quantity) {
+        throw new Error(`Stock insuficiente para el producto: ${product.name}. Stock disponible: ${product.stock}`);
+      }
+    }
+    
+    // Luego, actualizar el stock y preparar los productos del pedido
+    for (const item of cart.items) {
+      const product = await Product.findById(item.product._id);
       const nombre = item.product.name || 'Producto sin nombre';
       const precio = item.price || 0;
       const cantidad = item.quantity || 1;
       
-      return {
+      // Actualizar el stock
+      product.stock -= cantidad;
+      await product.save();
+      
+      // Agregar al array de productos del pedido
+      productosPedido.push({
         producto: item.product._id,
         nombre: nombre,
         precio: precio,
         cantidad: cantidad,
         subtotal: precio * cantidad
-      };
-    });
+      });
+    }
 
     // 3. Crear el pedido
     const nuevoPedido = new Pedido({

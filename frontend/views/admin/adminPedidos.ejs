@@ -111,16 +111,7 @@
                                     <div class="card-header d-flex justify-content-between align-items-center <%= headerClass %> text-white">
                                         <div class="d-flex align-items-center">
                                             <h5 class="mb-0 me-2">Pedido #<%= order.id %></h5>
-                                            <div class="d-flex align-items-center">
-                                                
-                                                <select class="form-select form-select-sm status-select" data-order-id="<%= order.id %>" style="max-width: 150px;">
-                                                    <option value="pendiente" <%= currentStatus === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
-                                                    <option value="confirmado" <%= currentStatus === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
-                                                    <option value="enviado" <%= currentStatus === 'enviado' ? 'selected' : '' %>>Enviado</option>
-                                                    <option value="entregado" <%= currentStatus === 'entregado' ? 'selected' : '' %>>Entregado</option>
-                                                    <option value="cancelado" <%= currentStatus === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
-                                                </select>
-                                            </div>
+                                            
                                         </div>
                                     </div>
                                     <div class="card-body">

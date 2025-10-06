@@ -78,34 +78,65 @@
 
             <!-- Main Content -->
             <div class="col-lg-10 col-md-9 ms-sm-auto px-md-4 py-4 main-content" id="mainContent">
-                <div
-                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h2 class="h3 fw-bold text-success">
                         <i class="bi bi-box-seam me-2"></i>Gestión de Productos
                     </h2>
-                    <button type="button" class="btn btn-success mb=3" data-bs-toggle="modal"
-                        data-bs-target="#addProductModal">
-                        <i class="bi bi-plus-circle me-1"></i> Nuevo Producto
-                    </button>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                            <i class="bi bi-plus-circle me-1"></i> Agregar Producto
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Products Table -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-success">
-                                    <tr>
-                                        <th>Imagen</th> <!-- Nueva columna -->
-                                        <th>Producto</th>
-                                        <th>Categoría</th>
-                                        <th class="text-center">Stock</th>
-                                        <th>Precio</th>
-                                        <th>Estado</th>
-                                        <th class="text-end pe-4">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="productsTable">
+                <!-- Filtros de búsqueda -->
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3"><i class="bi bi-funnel me-2"></i>Filtros</h5>
+                        <form id="filterForm" method="GET" class="row g-3">
+                            <div class="col-md-4">
+                                <label for="categoria" class="form-label">Categoría</label>
+                                <select class="form-select" id="categoria" name="categoria">
+                                    <option value="todas" <%= !filters.categoria ? 'selected' : '' %>>Todas las categorías</option>
+                                    <% categorias.forEach(cat => { %>
+                                        <option value="<%= cat.nombre %>" <%= filters.categoria === cat.nombre ? 'selected' : '' %>>
+                                            <%= cat.nombre %>
+                                        </option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="stockMaximo" class="form-label">Stock máximo</label>
+                                <input type="number" class="form-control" id="stockMaximo" name="stockMaximo" 
+                                       placeholder="Máximo stock" value="<%= filters.stockMaximo || '' %>">
+                                <div class="form-text">Dejar vacío para no filtrar por stock</div>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="bi bi-funnel"></i> Filtrar
+                                </button>
+                                <a href="/admin/productos" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Limpiar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-success">
+                            <tr>
+                                <th>Imagen</th>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th class="text-center">Stock</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                                <th class="text-end pe-4">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTable">
                                     <% products.forEach(product=> { %>
                                         <tr>
                                             <td>
