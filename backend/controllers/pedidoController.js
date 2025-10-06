@@ -201,7 +201,7 @@ exports.getPedidoById = async (req, res) => {
 // Actualizar estado de un pedido
 exports.updatePedido = async (req, res) => {
   try {
-    const { estado } = req.body;
+    const { estado, motivo } = req.body;
     
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ success: false, message: 'ID de pedido no válido' });
@@ -212,14 +212,46 @@ exports.updatePedido = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Pedido no encontrado' });
     }
 
-    // Actualizar solo el estado
-    pedido.estado = estado || pedido.estado;
+    // Validar que el estado sea válido
+    const estadosValidos = ['pendiente', 'confirmado', 'enviado', 'entregado', 'cancelado'];
+    if (estado && !estadosValidos.includes(estado)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Estado no válido. Los estados permitidos son: ' + estadosValidos.join(', ')
+      });
+    }
+
+    // Validar transiciones lógicas de estado (opcional pero recomendado)
+    const transicionesPermitidas = {
+      'pendiente': ['confirmado', 'cancelado'],
+      'confirmado': ['enviado', 'cancelado'],
+      'enviado': ['entregado', 'cancelado'],
+      'entregado': [], // No se puede cambiar desde entregado
+      'cancelado': [] // No se puede cambiar desde cancelado
+    };
+
+    const estadoActual = pedido.estado;
+    if (estado && estadoActual !== estado) {
+
+      // Registrar el cambio en el historial
+      pedido.historialEstados.push({
+        estadoAnterior: estadoActual,
+        estadoNuevo: estado,
+        fechaCambio: new Date(),
+        usuario: req.user?._id || null,
+        motivo: motivo || `Cambio de estado de ${estadoActual} a ${estado}`
+      });
+
+      // Actualizar el estado
+      pedido.estado = estado;
+    }
+
     const pedidoActualizado = await pedido.save();
 
     res.json({ 
       success: true, 
       message: 'Pedido actualizado correctamente',
-      pedido:pedidoActualizado 
+      pedido: pedidoActualizado 
     });
   } catch (error) {
     console.error('Error al actualizar pedido:', error);
@@ -248,5 +280,76 @@ exports.deletePedido = async (req, res) => {
   } catch (error) {
     console.error('Error al eliminar pedido:', error);
     res.status(500).json({ success: false, message: 'Error al eliminar el pedido.' });
+  }
+};
+
+// Actualizar estado de pedido por el usuario (solo confirmar o cancelar)
+exports.updatePedidoUsuario = async (req, res) => {
+  try {
+    const { accion } = req.body; // 'confirmar' o 'cancelar'
+    
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: 'ID de pedido no válido' });
+    }
+
+    const pedido = await Pedido.findById(req.params.id);
+    if (!pedido) {
+      return res.status(404).json({ success: false, message: 'Pedido no encontrado' });
+    }
+
+    // Verificar que el pedido pertenece al usuario
+    if (pedido.usuario.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'No autorizado para modificar este pedido' });
+    }
+
+    // Verificar que el pedido no esté ya en estado final
+    if (pedido.estado === 'entregado' || pedido.estado === 'cancelado') {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'No se puede modificar un pedido que ya está entregado o cancelado' 
+      });
+    }
+
+    // Determinar el nuevo estado según la acción
+    let nuevoEstado;
+    let mensaje;
+    
+    if (accion === 'confirmar') {
+      nuevoEstado = 'entregado';
+      mensaje = 'Pedido confirmado como entregado correctamente';
+    } else if (accion === 'cancelar') {
+      nuevoEstado = 'cancelado';
+      mensaje = 'Pedido cancelado correctamente';
+    } else {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Acción no válida. Use "confirmar" o "cancelar"' 
+      });
+    }
+
+    const estadoActual = pedido.estado;
+
+    // Registrar el cambio en el historial
+    pedido.historialEstados.push({
+      estadoAnterior: estadoActual,
+      estadoNuevo: nuevoEstado,
+      fechaCambio: new Date(),
+      usuario: req.user._id,
+      motivo: accion === 'confirmar' ? 'Usuario confirmó la entrega' : 'Usuario canceló el pedido'
+    });
+
+    // Actualizar el estado
+    pedido.estado = nuevoEstado;
+
+    const pedidoActualizado = await pedido.save();
+
+    res.json({ 
+      success: true, 
+      message: mensaje,
+      pedido: pedidoActualizado 
+    });
+  } catch (error) {
+    console.error('Error al actualizar pedido de usuario:', error);
+    res.status(500).json({ success: false, message: 'Error al actualizar el pedido.' });
   }
 };

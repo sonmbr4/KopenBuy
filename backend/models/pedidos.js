@@ -14,6 +14,29 @@ const pedidoSchema = new mongoose.Schema({
     enum: ['pendiente', 'confirmado', 'enviado', 'entregado', 'cancelado'],
     default: 'pendiente' 
   },
+  // Historial de cambios de estado para trazabilidad
+  historialEstados: [{
+    estadoAnterior: { 
+      type: String, 
+      enum: ['pendiente', 'confirmado', 'enviado', 'entregado', 'cancelado']
+    },
+    estadoNuevo: { 
+      type: String, 
+      enum: ['pendiente', 'confirmado', 'enviado', 'entregado', 'cancelado'],
+      required: true
+    },
+    fechaCambio: { 
+      type: Date, 
+      default: Date.now 
+    },
+    usuario: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'Usuario' 
+    },
+    motivo: { 
+      type: String 
+    }
+  }],
   direccionEnvio: {
     fullName: String,
     direccion: String,

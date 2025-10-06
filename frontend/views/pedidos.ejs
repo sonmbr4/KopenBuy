@@ -39,7 +39,6 @@
                                             <%= typeof pedido.fecha === 'string' ? pedido.fecha : pedido.fecha.toLocaleDateString('es-ES', { 
                                                 year: 'numeric', 
                                                 month: 'long', 
-                                                day: 'numeric',
                                                 hour: '2-digit',
                                                 minute: '2-digit'
                                             }) %>
@@ -47,17 +46,21 @@
                                     </div>
                                     <span class="badge rounded-pill bg-<%= 
                                         pedido.estado === 'entregado' ? 'success' : 
-                                        pedido.estado === 'enviado' ? 'info' : 
-                                        pedido.estado === 'pendiente' ? 'warning' : 
+                                        pedido.estado === 'enviado' ? 'warning' : 
+                                        pedido.estado === 'confirmado' ? 'primary' :
+                                        pedido.estado === 'cancelado' ? 'danger' :
+                                        pedido.estado === 'pendiente' ? 'secondary' : 
                                         'secondary' 
                                     %> text-capitalize">
                                         <i class="bi <%= 
                                             pedido.estado === 'entregado' ? 'bi-check-circle' : 
                                             pedido.estado === 'enviado' ? 'bi-truck' : 
+                                            pedido.estado === 'confirmado' ? 'bi-check2-square' :
+                                            pedido.estado === 'cancelado' ? 'bi-x-circle' :
                                             pedido.estado === 'pendiente' ? 'bi-hourglass-split' : 
                                             'bi-question-circle' 
                                         %> me-1"></i>
-                                        <%= pedido.estado || 'En proceso' %>
+                                        <%=pedido.estado || 'En proceso' %>
                                     </span>
                                 </div>
                                 <div class="card-body">
@@ -141,22 +144,23 @@
                                                             </div>
                                                         <% } %>
                                                         <hr>
-                                                        <div class="d-flex justify-content-between fw-bold fs-5">
+                                                        <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
                                                             <span>Total:</span>
                                                             <span class="text-primary">$<%= (pedido.total || 0).toFixed(2) %></span>
                                                         </div>
+                                                        
+                                                        <% if (pedido.estado !== 'entregado' && pedido.estado !== 'cancelado') { %>
+                                                            <div class="d-grid gap-2">
+                                                                <button class="btn btn-success btn-confirmar-entrega" data-pedido-id="<%= pedido._id %>">
+                                                                    <i class="bi bi-check-circle me-1"></i>Confirmar entrega
+                                                                </button>
+                                                                <button class="btn btn-outline-danger btn-cancelar-pedido" data-pedido-id="<%= pedido._id %>">
+                                                                    <i class="bi bi-x-circle me-1"></i>Cancelar pedido
+                                                                </button>
+                                                            </div>
+                                                        <% } %>
                                                     </div>
                                                 </div>
-                                                <% if (pedido.estado === 'enviado' && pedido.factura) { %>
-                                                    <div class="d-grid gap-2 mt-3">
-                                                        <a href="/facturas/<%= pedido.factura._id %>" class="btn btn-outline-primary">
-                                                            <i class="bi bi-download me-1"></i>Descargar factura
-                                                        </a>
-                                                        <button class="btn btn-outline-secondary">
-                                                            <i class="bi bi-truck me-1"></i>Seguir envío
-                                                        </button>
-                                                    </div>
-                                                <% } %>
                                             </div>
                                         </div>
                                     </div>
@@ -184,9 +188,117 @@
     <%- include('./partials/footer.ejs'); %>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/JS/user.js"></script>
     <script src="/JS/carrito.js"></script>
     <script src="/JS/animations.js"></script>
+    <script>
+        // Manejar confirmación de entrega
+        document.addEventListener('DOMContentLoaded', function() {
+            const botonesConfirmar = document.querySelectorAll('.btn-confirmar-entrega');
+            const botonesCancelar = document.querySelectorAll('.btn-cancelar-pedido');
+            
+            botonesConfirmar.forEach(boton => {
+                boton.addEventListener('click', async function() {
+                    const pedidoId = this.dataset.pedidoId;
+                    
+                    const result = await Swal.fire({
+                        title: '¿Confirmar entrega?',
+                        text: '¿Has recibido tu pedido y deseas confirmarlo como entregado?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#198754',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Sí, confirmar',
+                        cancelButtonText: 'Cancelar'
+                    });
+                    
+                    if (result.isConfirmed) {
+                        try {
+                            const response = await fetch(`/api/pedido/usuario/${pedidoId}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ accion: 'confirmar' })
+                            });
+                            
+                            const data = await response.json();
+                            
+                            if (data.success) {
+                                await Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Éxito!',
+                                    text: data.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                                window.location.reload();
+                            } else {
+                                throw new Error(data.message || 'Error al confirmar el pedido');
+                            }
+                        } catch (error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: error.message || 'Ocurrió un error al confirmar el pedido'
+                            });
+                        }
+                    }
+                });
+            });
+            
+            botonesCancelar.forEach(boton => {
+                boton.addEventListener('click', async function() {
+                    const pedidoId = this.dataset.pedidoId;
+                    
+                    const result = await Swal.fire({
+                        title: '¿Cancelar pedido?',
+                        text: 'Esta acción no se puede deshacer. ¿Estás seguro de cancelar este pedido?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Sí, cancelar',
+                        cancelButtonText: 'No, mantener'
+                    });
+                    
+                    if (result.isConfirmed) {
+                        try {
+                            const response = await fetch(`/api/pedido/usuario/${pedidoId}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ accion: 'cancelar' })
+                            });
+                            
+                            const data = await response.json();
+                            
+                            if (data.success) {
+                                await Swal.fire({
+                                    icon: 'success',
+                                    title: 'Pedido cancelado',
+                                    text: data.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                                window.location.reload();
+                            } else {
+                                throw new Error(data.message || 'Error al cancelar el pedido');
+                            }
+                        } catch (error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: error.message || 'Ocurrió un error al cancelar el pedido'
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
