@@ -36,25 +36,28 @@ router.get('/pedidos', async (req, res) => {
         const allOrders = pedidos.map(pedido => {
             const products = pedido.productos.map(item => ({
                 name: item.nombre || item.producto?.name || 'Producto no disponible',
-                quantity: item.cantidad,
                 price: typeof item.precio === 'number' ? item.precio : (item.producto?.price || 0)
             }));
 
-            const total = products.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+            const total = pedido.total || pedido.productos.reduce((sum, p) => sum + (p.precio * p.cantidad), 0);
 
             return {
                 id: pedido._id,
-                status: (pedido.estado === 'entregado') ? 'delivered' : (pedido.estado === 'enviado') ? 'shipped' : 'pending',
+                status: pedido.estado || 'pendiente',
                 customer: pedido.usuario?.nombre || 'Cliente desconocido',
                 date: pedido.fecha ? new Date(pedido.fecha).toLocaleDateString() : 'Fecha no disponible',
-                products,
-                total
+                products: pedido.productos.map(p => ({
+                    nombre: p.nombre || 'Producto sin nombre',
+                    cantidad: p.cantidad || 1,
+                    precio: p.precio || 0
+                })),
+                total: total
             };
         });
 
         res.render('admin/adminPedidos', { 
             title: 'Pedidos',
-            allOrders 
+            allOrders
         });
 
     } catch (error) {

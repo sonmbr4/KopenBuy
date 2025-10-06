@@ -7,8 +7,13 @@ const ProductSchema = new mongoose.Schema({
   category: String,
   price: { type: Number, required: true },
   image: { type: String },
-  createdAt : { type: Date, default: Date.now},
+  createdAt: { type: Date, default: Date.now },
   description: String,
+  status: { 
+    type: String, 
+    enum: ['active', 'inactive'],
+    default: 'active' 
+  }
 });
 
 module.exports = mongoose.model('Product', ProductSchema);

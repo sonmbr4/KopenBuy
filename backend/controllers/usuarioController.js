@@ -101,17 +101,34 @@ exports.login = async (req, res) =>{
     // Generar token
     const token = generateToken(user._id);
 
-    // Responde con Exito
+    // Configurar la cookie con el token (igual que en register)
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+      sameSite: 'lax',
+      path: '/',
+    };
+
+    res.cookie('token', token, cookieOptions);
+
+    // Cookie accesible desde JS si el frontend la necesita (opcional)
+    res.cookie('auth_token', token, {
+      ...cookieOptions,
+      httpOnly: false,
+    });
+
+    // Responde con éxito
     res.json({
       success: true,
       message: 'Inicio de sesion exitoso',
       token,
-      user:{
-        id:user._id,
-        nombre:user.nombre,
-        email:user.email,
-        role:user.role,
-        phone:user.phone
+      user: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role,
+        phone: user.phone
       }
     });
   } catch (error){
@@ -197,6 +214,13 @@ exports.logout = (req, res) => {
     // Eliminar la cookie de autenticación
     res.clearCookie('token', {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
+    });
+
+    // Eliminar también la cookie accesible por JS si existe
+    res.clearCookie('auth_token', {
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax'
     });

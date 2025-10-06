@@ -55,7 +55,6 @@
                                                                         <%= producto.stock <=0 ? 'Agotado' :
                                                                             (producto.stock < 10 ? 'Casi Agotado'
                                                                             : 'En Stock' ) %>
-                                                                    </span>
                                                                     <span class="fw-bold">$<%= producto.price ?
                                                                             producto.price.toLocaleString() : '0' %>
                                                                     </span>
@@ -63,17 +62,19 @@
                                                     </div>
                                                     <div class="card-footer bg-white border-0 d-flex flex-column gap-2">
                                                         <a href="/productos/<%= producto._id %>" class="btn btn-outline-primary w-100">Ver Detalles</a>
-                                                        <!-- Botón de Agregar al Carrito (solo para usuarios logueados) -->
-                                                        <button class="btn btn-success add-to-cart-btn auth-only"
-                                                            style="display: none;" data-product-id="<%= producto._id %>">
-                                                            🛒 Agregar al Carrito
-                                                        </button>
+                                                        <!-- Botón de Agregar al Carrito (solo para usuarios logueados y con stock) -->
+                                                        <% if (producto.stock > 0) { %>
+                                                            <button class="btn btn-success add-to-cart-btn auth-only"
+                                                                style="display: none;" data-product-id="<%= producto._id %>">
+                                                                🛒 Agregar al Carrito
+                                                            </button>
+                                                        <% } %>
                                                     </div>
                                     </div>
                                 </div>
                                 <% }); %>
                                     <% } else { %>
-                                        <div class="col-12 text-center">
+{{ ... }}
                                             <p>No hay computadoras disponibles en este momento.</p>
                                         </div>
                                         <% } %>

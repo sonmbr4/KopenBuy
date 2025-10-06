@@ -86,38 +86,72 @@
                         <% allOrders.forEach(function(order) { %>
                             <div class="col-md-4 mb-4">
                                 <div class="card h-100 border-0 shadow-sm">
-                                    <div class="card-header d-flex justify-content-between align-items-center 
-                                        <%= order.status === 'delivered' ? 'bg-success' : (order.status === 'shipped' ? 'bg-warning' : 'bg-secondary') %> text-white">
-                                        <h5 class="mb-0">Pedido #<%= order.id %></h5>
-                                        <span class="badge bg-white text-dark">
-                                            <%= order.status === 'delivered' ? 'Entregado' : (order.status === 'shipped' ? 'En camino' : 'Pendiente') %>
-                                        </span>
+                                    <% 
+                                    // Definir clases y textos para los estados
+                                    const statusClass = {
+                                        'pendiente': 'bg-secondary',  // Gris para pendiente
+                                        'confirmado': 'bg-primary',   // Azul para confirmado
+                                        'enviado': 'bg-warning',      // Amarillo para enviado
+                                        'entregado': 'bg-success',    // Verde para entregado
+                                        'cancelado': 'bg-danger'      // Rojo para cancelado
+                                    };
+                                    const statusText = {
+                                        'pendiente': 'Pendiente',
+                                        'confirmado': 'Confirmado',
+                                        'enviado': 'Enviado',
+                                        'entregado': 'Entregado',
+                                        'cancelado': 'Cancelado'
+                                    }; 
+                                    
+                                    // Obtener la clase y texto del estado actual
+                                    const currentStatus = order.status || 'pendiente';
+                                    const headerClass = statusClass[currentStatus] || 'bg-secondary';
+                                    const statusDisplay = statusText[currentStatus] || currentStatus;
+                                    %>
+                                    <div class="card-header d-flex justify-content-between align-items-center <%= headerClass %> text-white">
+                                        <div class="d-flex align-items-center">
+                                            <h5 class="mb-0 me-2">Pedido #<%= order.id %></h5>
+                                            <div class="d-flex align-items-center">
+                                                
+                                                <select class="form-select form-select-sm status-select" data-order-id="<%= order.id %>" style="max-width: 150px;">
+                                                    <option value="pendiente" <%= currentStatus === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
+                                                    <option value="confirmado" <%= currentStatus === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
+                                                    <option value="enviado" <%= currentStatus === 'enviado' ? 'selected' : '' %>>Enviado</option>
+                                                    <option value="entregado" <%= currentStatus === 'entregado' ? 'selected' : '' %>>Entregado</option>
+                                                    <option value="cancelado" <%= currentStatus === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-3">
                                             <h6 class="text-muted">Cliente</h6>
                                             <p><%= order.customer %></p>
                                         </div>
+                                        <% if (order.date) { %>
                                         <div class="mb-3">
                                             <h6 class="text-muted">Fecha</h6>
-                                            <p><%= order.date %></p>
+                                            <p><%= new Date(order.date).toLocaleDateString() %></p>
                                         </div>
+                                        <% } %>
+                                        <% if (order.products && order.products.length > 0) { %>
                                         <div class="mb-3">
                                             <h6 class="text-muted">Productos</h6>
                                             <ul class="list-group list-group-flush">
                                                 <% order.products.forEach(function(product) { %>
                                                     <li class="list-group-item d-flex justify-content-between px-0">
-                                                        <span><%= product.name %> x<%= product.quantity %></span>
-                                                        <span>$<%= product.price.toLocaleString('es-CO') %></span>
+                                                        <span><%= product.nombre || 'Producto sin nombre' %> x<%= product.cantidad || 1 %></span>
+                                                        <span>$<%= (product.precio || 0).toLocaleString('es-CO') %></span>
                                                     </li>
                                                 <% }); %>
                                             </ul>
                                         </div>
+                                        <% } %>
                                     </div>
                                     <div class="card-footer bg-transparent">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">Total</h5>
-                                            <h5 class="mb-0">$<%= order.total.toLocaleString('es-CO') %></h5>
+                                            <h5 class="mb-0 text-success">$<%= (order.total || 0).toLocaleString('es-CO') %></h5>
                                         </div>
                                     </div>
                                 </div>
@@ -125,9 +159,7 @@
                         <% }); %>
                     <% } else { %>
                         <div class="col-12">
-                            <div class="alert alert-info text-center">
-                                No hay pedidos disponibles en este momento.  
-                            </div>
+                            <div class="alert alert-info">No hay pedidos para mostrar.</div>
                         </div>
                     <% } %>
                 </div>
@@ -135,40 +167,116 @@
         </div>
     </div>
 
-    <footer class="footer bg-dark text-white py-4 mt-4">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="mb-3"><i class="bi bi-bag-check text-success me-2"></i>Kopen Buy Admin</h5>
-                    <p class="mb-0 text-white-50">Panel de administración para la tienda de tecnología Kopen Buy</p>
-                </div>
-                <div class="col-md-3">
-                    <h5 class="mb-3">Enlaces</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="/" class="text-white-50 text-decoration-none"><i
-                                    class="bi bi-arrow-right-short text-success"></i> Tienda Principal</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none"><i
-                                    class="bi bi-arrow-right-short text-success"></i> Documentación</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5 class="mb-3">Soporte</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><i class="bi bi-envelope text-success me-2"></i> soporte@kopenbuy.com</li>
-                        <li class="mb-2"><i class="bi bi-telephone text-success me-2"></i> +123 456 7890</li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="my-4 bg-success bg-opacity-25">
-            <div class="text-center">
-                <p class="mb-0 small text-white-50">&copy; 2025 Kopen Buy. Todos los derechos reservados.</p>
-            </div>
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-0 small text-white-50">&copy; 2025 Kopen Buy. Todos los derechos reservados.</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/JS/modalsAdmin.js"></script>
-    <script src="/JS/adminClient.js"></script>
+    <script>
+        // Manejar el cambio de estado del pedido
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusSelects = document.querySelectorAll('.status-select');
+            
+            // Función para actualizar los colores basados en el estado
+            function updateStatusColors() {
+                statusSelects.forEach(select => {
+                    const status = select.value;
+                    const cardHeader = select.closest('.card').querySelector('.card-header');
+                    const statusBadge = select.previousElementSibling;
+                    
+                    // Actualizar clases del encabezado
+                    cardHeader.className = cardHeader.className.split(' ').filter(c => !c.startsWith('bg-')).join(' ');
+                    cardHeader.classList.add(
+                        status === 'pendiente' ? 'bg-secondary' : 
+                        status === 'confirmado' ? 'bg-primary' :
+                        status === 'enviado' ? 'bg-warning' :
+                        status === 'entregado' ? 'bg-success' : 'bg-danger',
+                        'text-white', 'd-flex', 'justify-content-between', 'align-items-center'
+                    );
+                    
+                    // Actualizar badge
+                    statusBadge.className = 'badge ' + 
+                        (status === 'pendiente' ? 'bg-secondary' : 
+                         status === 'confirmado' ? 'bg-primary' :
+                         status === 'enviado' ? 'bg-warning' :
+                         status === 'entregado' ? 'bg-success' : 'bg-danger') + ' me-2';
+                    
+                    statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                });
+            }
+            
+            // Inicializar colores al cargar la página
+            updateStatusColors();
+            
+            statusSelects.forEach(select => {
+                // Guardar el valor inicial
+                select._x = select.value;
+                
+                select.addEventListener('change', async function() {
+                    const orderId = this.dataset.orderId;
+                    const newStatus = this.value;
+                    const originalStatus = this._x;
+                    
+                    try {
+                        const response = await fetch(`/api/pedido/${orderId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-api-key': 'APIKEY_PEDIDO_456'
+                            },
+                            body: JSON.stringify({ estado: newStatus })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            // Actualizar el valor guardado
+                            this._x = newStatus;
+                            
+                            // Actualizar colores
+                            updateStatusColors();
+                            
+                            // Mostrar notificación de éxito
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Éxito!',
+                                text: 'Estado del pedido actualizado correctamente',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                            
+                            // Recargar la página después de 1 segundo para asegurar que todo esté actualizado
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                            
+                        } else {
+                            throw new Error(result.message || 'Error al actualizar el estado del pedido');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        // Revertir el cambio en el select
+                        this.value = originalStatus;
+                        
+                        // Mostrar notificación de error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message || 'Ocurrió un error al actualizar el estado del pedido',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 </body>
-
-</html>

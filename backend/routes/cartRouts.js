@@ -18,6 +18,14 @@ router.post('/add', authMiddleware, async (req, res) => {
       });
     }
 
+    // Verificar stock disponible
+    if (product.stock < quantity) {
+      return res.status(400).json({
+        success: false,
+        message: `No hay suficiente stock. Solo quedan ${product.stock} unidades disponibles.`
+      });
+    }
+
     // Buscar o crear carrito
     let cart = await Cart.findOne({ user: req.user._id });
     
@@ -34,8 +42,16 @@ router.post('/add', authMiddleware, async (req, res) => {
     );
 
     if (existingItemIndex > -1) {
+      // Verificar que la cantidad total no exceda el stock
+      const newQuantity = cart.items[existingItemIndex].quantity + quantity;
+      if (newQuantity > product.stock) {
+        return res.status(400).json({
+          success: false,
+          message: `No hay suficiente stock. Solo puedes agregar ${product.stock - cart.items[existingItemIndex].quantity} unidades más.`
+        });
+      }
       // Actualizar cantidad
-      cart.items[existingItemIndex].quantity += quantity;
+      cart.items[existingItemIndex].quantity = newQuantity;
     } else {
       // Agregar nuevo item
       cart.items.push({
@@ -98,24 +114,50 @@ router.put('/update/:itemId', authMiddleware, async (req, res) => {
   try {
     const { quantity } = req.body;
     const { itemId } = req.params;
-
-    const cart = await Cart.findOne({ user: req.user._id });
     
+    if (quantity < 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'La cantidad debe ser al menos 1'
+      });
+    }
+    
+    // Obtener el carrito
+    const cart = await Cart.findOne({ user: req.user._id });
     if (!cart) {
       return res.status(404).json({
         success: false,
         message: 'Carrito no encontrado'
       });
     }
-
+    
+    // Encontrar el item en el carrito
     const item = cart.items.id(itemId);
     if (!item) {
       return res.status(404).json({
         success: false,
-        message: 'Item no encontrado en el carrito'
+        message: 'Ítem no encontrado en el carrito'
+      });
+    }
+    
+    // Obtener el producto para verificar el stock
+    const product = await Product.findById(item.product);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Producto no encontrado'
+      });
+    }
+    
+    // Verificar que no se exceda el stock
+    if (quantity > product.stock) {
+      return res.status(400).json({
+        success: false,
+        message: `No hay suficiente stock. Solo quedan ${product.stock} unidades disponibles.`
       });
     }
 
+    // Actualizar la cantidad del ítem
     if (quantity <= 0) {
       // Eliminar item si la cantidad es 0 o menor
       cart.items.pull({ _id: itemId });
