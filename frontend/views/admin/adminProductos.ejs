@@ -341,6 +341,7 @@
                             <label for="editPrice" class="form-label">Precio</label>
                             <input type="number" class="form-control" id="editPrice" name="price" step="1000" min="0" required 
                                 oninvalid="this.setCustomValidity('El precio debe ser un número mayor o igual a 0')" 
+                                oninput="this.setCustomValidity('')"
                                 >
                         </div>
                         <div class="mb-3">
