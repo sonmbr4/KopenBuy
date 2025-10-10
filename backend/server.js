@@ -118,19 +118,29 @@ app.get('/', async (req, res) => {
 });
 
 
-// Ruta para mostrar el catálogo de productos
+// Ruta para mostrar el catálogo de productos con búsqueda
 app.get('/productos', async (req, res) => {
   try {
-    const products = await Product.find();
+    const searchQuery = req.query.search;
+    let query = {};
+    
+    if (searchQuery) {
+      // Buscar productos que comiencen con el término de búsqueda (insensible a mayúsculas/minúsculas)
+      query.name = { $regex: new RegExp('^' + searchQuery, 'i') };
+    }
+    
+    const products = await Product.find(query);
     res.render('sections/catalogo', { 
-      title: 'Todos los Productos',
-      productosCatalogo: products || []
+      title: searchQuery ? `Búsqueda: ${searchQuery}` : 'Todos los Productos',
+      productosCatalogo: products || [],
+      searchQuery: searchQuery || ''
     });
   } catch (error) {
     console.error('Error al cargar los productos:', error);
     res.status(500).render('sections/catalogo', { 
-      title: 'Todos los Productos',
-      productosCatalogo: []
+      title: 'Error al cargar productos',
+      productosCatalogo: [],
+      searchQuery: req.query.search || ''
     });
   }
 });

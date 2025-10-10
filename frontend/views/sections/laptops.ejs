@@ -55,6 +55,7 @@
                                                                         <%= producto.stock <=0 ? 'Agotado' :
                                                                             (producto.stock < 10 ? 'Casi Agotado'
                                                                             : 'En Stock' ) %>
+                                                                    </span>
                                                                     <span class="fw-bold">$<%= producto.price ?
                                                                             producto.price.toLocaleString() : '0' %>
                                                                     </span>
