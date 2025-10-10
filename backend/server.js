@@ -243,22 +243,30 @@ app.post('/api/update-profile', authMiddleware, async (req, res) => {
             });
         }
         
-        const { nombre } = req.body;
+        // Extraer campos permitidos para actualizar
+        const { nombre, telefono, direccion } = req.body;
         
-        if (!nombre || nombre.trim() === '') {
-            console.log('Error: Nombre vacío o no proporcionado');
+        // Construir objeto de actualización solo con campos proporcionados
+        const updateFields = {};
+        if (nombre !== undefined) updateFields.nombre = nombre.trim();
+        if (telefono !== undefined) updateFields.telefono = telefono.trim();
+        if (direccion !== undefined) updateFields.direccion = direccion.trim();
+        
+        // Verificar que al menos un campo esté presente
+        if (Object.keys(updateFields).length === 0) {
+            console.log('Error: No se proporcionaron campos válidos para actualizar');
             return res.status(400).json({ 
                 success: false, 
-                message: 'El nombre es requerido' 
+                message: 'Debe proporcionar al menos un campo para actualizar' 
             });
         }
 
         try {
             const usuario = await Usuario.findByIdAndUpdate(
                 req.user._id,
-                { nombre: nombre.trim() },
+                { $set: updateFields },
                 { new: true, runValidators: true }
-            ).select('nombre email telefono').lean();
+            ).select('nombre email telefono direccion').lean();
 
             if (!usuario) {
                 console.log('Usuario no encontrado con ID:', req.user._id);
@@ -274,7 +282,8 @@ app.post('/api/update-profile', authMiddleware, async (req, res) => {
                 user: {
                     nombre: usuario.nombre,
                     email: usuario.email,
-                    telefono: usuario.telefono
+                    telefono: usuario.telefono,
+                    direccion: usuario.direccion
                 }
             });
         } catch (dbError) {
@@ -306,7 +315,7 @@ app.get('/perfil', authMiddleware, async (req, res) => {
     
     // Obtener los datos actualizados del usuario
     const Usuario = require('./models/usuario');
-    const usuario = await Usuario.findById(req.user._id).select('nombre email telefono');
+    const usuario = await Usuario.findById(req.user._id).select('nombre email telefono direccion');
     
     if (!usuario) {
       console.log('Usuario no encontrado en la base de datos');
@@ -318,7 +327,8 @@ app.get('/perfil', authMiddleware, async (req, res) => {
       user: {
         nombre: usuario.nombre,
         email: usuario.email,
-        telefono: usuario.telefono
+        telefono: usuario.telefono,
+        direccion: usuario.direccion
       }
     });
   } catch (error) {

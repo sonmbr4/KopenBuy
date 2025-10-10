@@ -129,14 +129,29 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="phone" class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" id="phone" name="phone"
-                                value="<%= user.telefono || 'No especificado' %>" readonly>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label for="phone" class="form-label mb-0">Teléfono</label>
+                                <button type="button" id="editPhoneBtn" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                            </div>
+                            <input type="tel" class="form-control" id="phone" name="telefono"
+                                value="<%= user.telefono || '' %>" readonly>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label for="direccion" class="form-label mb-0">Dirección</label>
+                                <button type="button" id="editAddressBtn" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                            </div>
+                            <textarea class="form-control" id="direccion" name="direccion" rows="2" readonly><%= user.direccion || '' %></textarea>
                         </div>
                     </form>
 
                     <!-- Sección de Cambio de Contraseña -->
-                    <h3 class="section-title mt-4">Cambiar contraseña</h3>
+                    <h3 class="section-title mt-5">Cambiar contraseña</h3>
                     <form id="passwordForm" class="mb-3">
                         <div class="mb-3">
                             <label for="currentPassword" class="form-label">Contraseña actual</label>

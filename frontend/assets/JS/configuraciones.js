@@ -1,26 +1,40 @@
-// Función para manejar la edición del nombre
+// Función para manejar la edición de campos del perfil
 document.addEventListener('DOMContentLoaded', function () {
     const editNameBtn = document.getElementById('editNameBtn');
+    const editPhoneBtn = document.getElementById('editPhoneBtn');
+    const editAddressBtn = document.getElementById('editAddressBtn');
+    
     const nameInput = document.getElementById('nombre');
+    const phoneInput = document.getElementById('phone');
+    const addressInput = document.getElementById('direccion');
+    
     const userName = document.getElementById('userName');
     const passwordForm = document.getElementById('passwordForm');
     const currentPassword = document.getElementById('currentPassword');
     const newPassword = document.getElementById('newPassword');
     const confirmNewPassword = document.getElementById('confirmNewPassword');
 
-    editNameBtn.addEventListener('click', function () {
-        if (nameInput.readOnly) {
+    // Guardar valores originales
+    const originalValues = {
+        nombre: nameInput.value,
+        telefono: phoneInput.value,
+        direccion: addressInput.value
+    };
+
+    // Función para manejar la edición de un campo
+    function handleFieldEdit(input, button, fieldName, updateData, successMessage) {
+        if (input.readOnly) {
             // Habilitar edición
-            nameInput.readOnly = false;
-            nameInput.focus();
-            editNameBtn.innerHTML = '<i class="bi bi-check"></i> Guardar';
-            editNameBtn.classList.remove('btn-outline-primary');
-            editNameBtn.classList.add('btn-success');
+            input.readOnly = false;
+            input.focus();
+            button.innerHTML = '<i class="bi bi-check"></i> Guardar';
+            button.classList.remove('btn-outline-primary');
+            button.classList.add('btn-success');
         } else {
             // Guardar cambios
-            const newName = nameInput.value.trim();
-            if (newName) {
-                // Llamada al servidor para actualizar el nombre
+            const newValue = input.value.trim();
+            if (newValue) {
+                // Llamada al servidor para actualizar el campo
                 fetch('/api/update-profile', {
                     method: 'POST',
                     headers: {
@@ -28,33 +42,71 @@ document.addEventListener('DOMContentLoaded', function () {
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: JSON.stringify({ nombre: newName }),
-                    credentials: 'include' // Importante para enviar cookies de autenticación
+                    body: JSON.stringify(updateData),
+                    credentials: 'include'
                 })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Actualizar el nombre en la interfaz
-                            userName.textContent = newName;
-                            showAlert('¡Nombre actualizado correctamente!', 'success');
+                            // Actualizar el valor original
+                            originalValues[fieldName] = newValue;
+                            // Actualizar la interfaz si es necesario
+                            if (fieldName === 'nombre' && userName) {
+                                userName.textContent = newValue;
+                            }
+                            showAlert(successMessage, 'success');
                         } else {
-                            throw new Error(data.message || 'Error al actualizar el nombre');
+                            throw new Error(data.message || `Error al actualizar ${fieldName}`);
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        showAlert(error.message || 'Error al actualizar el nombre', 'danger');
+                        showAlert(error.message || `Error al actualizar ${fieldName}`, 'danger');
                         // Revertir el cambio en la interfaz
-                        nameInput.value = userName.textContent;
+                        input.value = originalValues[fieldName];
                     });
             }
 
             // Deshabilitar edición
-            nameInput.readOnly = true;
-            editNameBtn.innerHTML = '<i class="bi bi-pencil"></i> Editar';
-            editNameBtn.classList.remove('btn-success');
-            editNameBtn.classList.add('btn-outline-primary');
+            input.readOnly = true;
+            button.innerHTML = '<i class="bi bi-pencil"></i> Editar';
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-primary');
         }
+    }
+
+    // Manejadores de eventos para cada campo
+    editNameBtn.addEventListener('click', function () {
+        const newName = nameInput.value.trim();
+        handleFieldEdit(
+            nameInput,
+            editNameBtn,
+            'nombre',
+            { nombre: newName },
+            '¡Nombre actualizado correctamente!'
+        );
+    });
+
+    editPhoneBtn.addEventListener('click', function () {
+        const newPhone = phoneInput.value.trim();
+        handleFieldEdit(
+            phoneInput,
+            editPhoneBtn,
+            'telefono',
+            { telefono: newPhone },
+            '¡Teléfono actualizado correctamente!'
+        );
+    });
+
+    editAddressBtn.addEventListener('click', function () {
+        const newAddress = addressInput.value.trim();
+        handleFieldEdit(
+            addressInput,
+            editAddressBtn,
+            'direccion',
+            { direccion: newAddress },
+            '¡Dirección actualizada correctamente!'
+        );
     });
 
     // Función para mostrar alertas

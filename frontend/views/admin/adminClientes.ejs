@@ -101,9 +101,10 @@
                 </p>
             </div>
             <div class="card-footer d-flex justify-content-between align-items-center">
-                <% if(cliente.activo){ %>
+                <% const isActive = (cliente.activo === undefined || cliente.activo === null) ? true : !!cliente.activo; %>
+                <% if(isActive) { %>
                     <span class="badge bg-success">Activo</span>
-                <% }else{ %>
+                <% } else { %>
                     <span class="badge bg-secondary">Inactivo</span>
                 <% } %>
 
