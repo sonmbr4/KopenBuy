@@ -33,9 +33,9 @@
                                             <img src="/uploads/<%= producto.image.includes('/') ? producto.image.split('/').pop() : producto.image %>"
                                             alt="<%= producto.name %>" class="card-img-top"
                                             style="height: 200px; object-fit: cover;"
-                                            onerror="this.onerror=null; this.src='/assets/imagenes/placeholder-image.svg'">
+                                            onerror="this.onerror=null; this.src='imagenes/placeholder-image.svg'">
                                             <% } else { %>
-                                                <img src="/assets/imagenes/placeholder-image.svg"
+                                                <img src="imagenes/placeholder-image.svg"
                                                     class="card-img-top product-image" alt="Imagen no disponible"
                                                     loading="lazy" onerror="handleImageError(this)">
                                                 <% } %>

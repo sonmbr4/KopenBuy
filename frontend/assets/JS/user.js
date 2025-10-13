@@ -3,15 +3,24 @@
 // Función para mostrar/ocultar botones de carrito según autenticación
 function updateCartButtonsVisibility(isLoggedIn) {
     const cartButtons = document.querySelectorAll('.add-to-cart-btn');
+    const notLoggedInButtons = document.querySelectorAll('.not-logged-in-btn');
     const cartNavButton = document.getElementById('cartNavButton');
     
+    // Mostrar/ocultar botones de agregar al carrito
     if (cartButtons) {
         cartButtons.forEach(button => {
             button.style.display = isLoggedIn ? 'inline-block' : 'none';
         });
     }
     
-    // También actualizar botón de carrito en el navbar si existe
+    // Mostrar/ocultar botones de "Debes iniciar sesión"
+    if (notLoggedInButtons) {
+        notLoggedInButtons.forEach(button => {
+            button.style.display = isLoggedIn ? 'none' : 'block';
+        });
+    }
+    
+    // Actualizar botón de carrito en el navbar si existe
     if (cartNavButton) {
         cartNavButton.style.display = isLoggedIn ? 'block' : 'none';
     }
@@ -132,7 +141,7 @@ async function registerUser() {
 
     // Validar nombre
     if (!nombre) {
-        showError('Por favor ingresa tu nombre completo');
+        showError('Por favor, ingresa tu nombre completo');
         return;
     }
 
@@ -146,22 +155,22 @@ async function registerUser() {
         return;
     }
 
-    // Validar teléfono (solo números, mínimo 8 dígitos)
-    const telefonoRegex = /^[0-9]{8,15}$/;
+    // Validar teléfono (solo números, mínimo 6 dígitos)
+    const telefonoRegex = /^3\d{5,11}$/;
     if (!telefono) {
-        showError('Por favor ingresa tu número de teléfono');
+        showError('Por favor, ingresa tu número de teléfono');
         return;
     } else if (!telefonoRegex.test(telefono)) {
-        showError('El número de teléfono debe contener solo números y tener entre 8 y 15 dígitos');
+        showError('El número de teléfono debe contener solo números, tener entre 6 y 12 dígitos e iniciar con 3');
         return;
     }
 
     // Validar contraseña
     if (!password) {
-        showError('Por favor ingresa una contraseña');
+        showError('Por favor, ingresa una contraseña');
         return;
-    } else if (password.length < 6) {
-        showError('La contraseña debe tener al menos 6 caracteres');
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/.test(password)) {
+        showError('La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula, un número y un carácter especial');
         return;
     }
 
@@ -171,11 +180,20 @@ async function registerUser() {
         return;
     }
 
+    // Obtener token de Cloudflare Turnstile
+    const captchaInput = document.querySelector('input[name="cf-turnstile-response"]');
+    const cfTurnstileToken = captchaInput ? captchaInput.value : '';
+    if (!cfTurnstileToken) {
+        showError('Por favor completa la verificación de seguridad (CAPTCHA)');
+        return;
+    }
+
     const formData = {
         nombre: nombre,
         email: email,
         password: password,
-        telefono: telefono
+        telefono: telefono,
+        cfTurnstileToken: cfTurnstileToken
     };
 
     try {
@@ -202,16 +220,20 @@ async function registerUser() {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
 
-            // Redirigir después de 2 segundos
+            // Redirigir después de 1 segundos
             setTimeout(() => {
                 window.location.reload();
-            }, 2000);
+            }, 1000);
         } else {
             showError(data.message || 'Error en el registro. Por favor, verifica los datos e inténtalo de nuevo.');
         }
+        // Reiniciar captcha si existe
+        if (window.turnstile) { window.turnstile.reset(); }
     } catch (error) {
         console.error('Error en el registro:', error);
         showError('Error de conexión. Por favor, verifica tu conexión a internet e inténtalo de nuevo.');
+        // Reiniciar captcha si existe
+        if (window.turnstile) { window.turnstile.reset(); }
     }
 }
 
@@ -292,7 +314,6 @@ async function loginUser(){
         }
 
         const data = await response.json();
-        console.log('Respuesta del servidor:', data); // Para depuración
 
         if (data.success && data.user) {
             showLoginSuccess('¡Inicio de sesión exitoso!');
@@ -331,7 +352,7 @@ function logout(){
 
 //Actualizar UI despues del login
 function updateUIAfterLogin(user) {
-    console.log('Actualizando UI para usuario:', user); // Para depuración
+    console.log('Actualizando UI para usuario',); // Para depuración
     
     // Obtener referencias a los elementos del DOM
     const loginBtn = document.getElementById('loginBtn');
@@ -460,6 +481,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 30000);
 });
+
+// Enlazar submit del formulario de registro
+ const registerForm = document.getElementById('registerForm');
+ if (registerForm) {
+ registerForm.addEventListener('submit', function(e) {
+ e.preventDefault();
+ registerUser();
+ });
+ }
 
 //limpiar modales al cerrarlos
 document.getElementById('loginModal').addEventListener('hidden.bs.modal', function() {

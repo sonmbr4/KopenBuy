@@ -94,7 +94,8 @@ const obtenerEstadisticas = async (req, res) => {
          // Renderizar la vista con los datos
          res.render('admin/adminEstadisticas', { 
             title: 'Estadísticas',
-            estadisticas 
+            estadisticas,
+            user: req.currentUser || { name: 'Administrador', email: 'admin@kopenbuy.com' }
         });
         
     } catch (error) {

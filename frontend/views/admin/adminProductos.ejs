@@ -32,18 +32,11 @@
                             <span>Administrador</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow">
-                            <li>
-                                <a href="#" onclick="configuracion()"  class="dropdown-item" data-bs-toggle="offcanvas"
-                                    data-bs-target="#profileConfigOffcanvas">
-                                    <i class="bi bi-gear me-2"></i> Configuración
-                                </a>
-                            <li>
+                            <li><a class="dropdown-item" href="/perfil"><i class="bi bi-person me-2"></i>Perfil</a></li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><button id="logout-btn" onclick="logout()" class="dropdown-item text-danger">
-                                    <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
-                                </button>
-                            </li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="logout(); return false;"><i
+                                class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
                         </ul>
                     </div>
                 </div>
@@ -57,8 +50,8 @@
             <div class="col-lg-2 col-md-3 sidebar p-0" id="sidebar">
                 <div class="text-center p-4 border-bottom">
                     <i class="bi bi-person-circle fs-1 text-success"></i>
-                    <h5 class="mt-2 mb-1">Administrador</h5>
-                    <small class="text-muted">admin@kopenbuy.com</small>
+                    <h5 class="mt-2 mb-1"><%= user.name %></h5>
+                    <small class="text-muted"><%= user.email %></small>
                 </div>
                 <div class="list-group list-group-flush rounded-0">
                     <a href="/admin/productos" class="list-group-item list-group-item-action active">
@@ -109,7 +102,6 @@
                                 <label for="stockMaximo" class="form-label">Stock máximo</label>
                                 <input type="number" class="form-control" id="stockMaximo" name="stockMaximo" 
                                        placeholder="Máximo stock" value="<%= filters.stockMaximo || '' %>">
-                                <div class="form-text">Dejar vacío para no filtrar por stock</div>
                             </div>
                             <div class="col-md-4 d-flex align-items-end">
                                 <button type="submit" class="btn btn-primary me-2">
@@ -144,7 +136,8 @@
                                                     <img src="/uploads/<%= product.image.includes('/') ? product.image.split('/').pop() : product.image %>" 
                                                     alt="<%= product.name %>" 
                                                     class="img-thumbnail" 
-                                                    style="width: 50px; height: 50px; object-fit: cover;">
+                                                    style="width: 50px; height: 50px; object-fit: cover;"
+                                                    onerror="this.onerror=null; this.src='/imagenes/placeholder-image.svg'; this.style.objectFit='contain';">
                                                 <% } else { %>
                                                     <div class="bg-light d-flex align-items-center justify-content-center" 
                                                          style="width: 50px; height: 50px;">
@@ -306,7 +299,8 @@
                         <img id="productDetailImage" src="#" 
                              alt="Imagen del producto" 
                              class="img-fluid rounded" 
-                             style="max-height: 200px; display: none;">
+                             style="max-height: 200px; display: none;"
+                             onerror="this.onerror=null; this.src='/imagenes/placeholder-image.svg'; this.style.objectFit='contain';">
                     </div>
                     <div id="productDetailsContent">
                         <!-- Los detalles se cargarán aquí dinámicamente -->

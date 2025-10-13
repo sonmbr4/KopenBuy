@@ -13,6 +13,13 @@ const authMiddleware = require('./middlewares/userMiddleware');
 // const cron = require('node-cron');
 
 
+// SDK de Mercado Pago
+const { MercadoPagoConfig, Preference } = require('mercadopago');
+// Agrega credenciales
+const client = new MercadoPagoConfig({ accessToken: 'APP_USR-1599682218917005-101315-eda101ae2dfafb921bb8991d3e1aeb95-2923895115' });
+
+
+
 
 //Rutas requeridas
 const categoriaRoutes = require('./routes/categoriaRouts');
@@ -82,6 +89,9 @@ app.use(express.static(path.join(__dirname, '../frontend/assets')));
 // Importar el controlador de productos
 const { getFeaturedProducts, getProductsByCategory, getAllProducts } = require('./controllers/productsController');
 
+
+
+
 //Rutas Admin
 app.use('/admin', adminRoutes);
 
@@ -118,32 +128,70 @@ app.get('/', async (req, res) => {
 });
 
 
-// Ruta para mostrar el catálogo de productos con búsqueda
-app.get('/productos', async (req, res) => {
+
+
+// OPCIÓN 1: SIN AUTO_RETURN (MÁS SIMPLE Y ESTABLE)
+// Reemplaza el endpoint /crear-preferencia en server.js con este código
+
+app.post("/crear-preferencia", async (req, res) => {
   try {
-    const searchQuery = req.query.search;
-    let query = {};
+    // Validar que se reciban items
+    const { items } = req.body;
     
-    if (searchQuery) {
-      // Buscar productos que comiencen con el término de búsqueda (insensible a mayúsculas/minúsculas)
-      query.name = { $regex: new RegExp('^' + searchQuery, 'i') };
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ 
+        error: "Debe proporcionar items para crear la preferencia" 
+      });
     }
-    
-    const products = await Product.find(query);
-    res.render('sections/catalogo', { 
-      title: searchQuery ? `Búsqueda: ${searchQuery}` : 'Todos los Productos',
-      productosCatalogo: products || [],
-      searchQuery: searchQuery || ''
+
+    // Validar estructura de items
+    const validItems = items.map(item => {
+      if (!item.title || !item.quantity || !item.unit_price) {
+        throw new Error('Cada item debe tener title, quantity y unit_price');
+      }
+      
+      return {
+        title: String(item.title),
+        quantity: Number(item.quantity),
+        unit_price: Number(item.unit_price),
+        currency_id: "COP" // Moneda colombiana
+      };
     });
+
+    // Crear la preferencia con los datos recibidos
+    const preference = new Preference(client);
+    const preferenceData = await preference.create({
+      body: {
+        items: validItems,
+        back_urls: {
+          success: `${req.protocol}://${req.get('host')}/pedidos`,
+          failure: `${req.protocol}://${req.get('host')}/carrito`,
+          pending: `${req.protocol}://${req.get('host')}/carrito`
+        },
+        // NO usar auto_return - el usuario hará clic en "Volver al sitio"
+        statement_descriptor: "KOPENBUY",
+        external_reference: `ORDER-${Date.now()}` // Referencia única
+      }
+    });
+
+    console.log('Preferencia creada exitosamente:');
+
+    res.status(200).json({
+      preferenceId: preferenceData.id,
+      preference_url: preferenceData.init_point,
+      sandbox_url: preferenceData.sandbox_init_point
+    });
+
   } catch (error) {
-    console.error('Error al cargar los productos:', error);
-    res.status(500).render('sections/catalogo', { 
-      title: 'Error al cargar productos',
-      productosCatalogo: [],
-      searchQuery: req.query.search || ''
+    console.error('Error al crear la preferencia:', error);
+    res.status(500).json({ 
+      error: "Error al crear la preferencia",
+      details: error.message 
     });
   }
 });
+
+
 
 
 // Ruta para ver detalles de producto
@@ -232,96 +280,96 @@ app.post('/api/change-password', authMiddleware, async (req, res) => {
 
 // Ruta para actualizar el perfil del usuario
 app.post('/api/update-profile', authMiddleware, async (req, res) => {
-    
-    try {
-        // Verificar si el cuerpo de la solicitud está vacío
-        if (!req.body || Object.keys(req.body).length === 0) {
-            console.log('Error: Cuerpo de la solicitud vacío');
-            return res.status(400).json({ 
-                success: false, 
-                message: 'El cuerpo de la solicitud no puede estar vacío' 
-            });
-        }
-        
-        // Extraer campos permitidos para actualizar
-        const { nombre, telefono, direccion } = req.body;
-        
-        // Construir objeto de actualización solo con campos proporcionados
-        const updateFields = {};
-        if (nombre !== undefined) updateFields.nombre = nombre.trim();
-        if (telefono !== undefined) updateFields.telefono = telefono.trim();
-        if (direccion !== undefined) updateFields.direccion = direccion.trim();
-        
-        // Verificar que al menos un campo esté presente
-        if (Object.keys(updateFields).length === 0) {
-            console.log('Error: No se proporcionaron campos válidos para actualizar');
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Debe proporcionar al menos un campo para actualizar' 
-            });
-        }
 
-        try {
-            const usuario = await Usuario.findByIdAndUpdate(
-                req.user._id,
-                { $set: updateFields },
-                { new: true, runValidators: true }
-            ).select('nombre email telefono direccion').lean();
-
-            if (!usuario) {
-                console.log('Usuario no encontrado con ID:', req.user._id);
-                return res.status(404).json({ 
-                    success: false, 
-                    message: 'Usuario no encontrado' 
-                });
-            }
-            
-            res.json({ 
-                success: true, 
-                message: 'Perfil actualizado correctamente',
-                user: {
-                    nombre: usuario.nombre,
-                    email: usuario.email,
-                    telefono: usuario.telefono,
-                    direccion: usuario.direccion
-                }
-            });
-        } catch (dbError) {
-            console.error('Error de base de datos:', dbError);
-            throw dbError; // Esto será capturado por el catch externo
-        }
-    } catch (error) {
-        console.error('Error al actualizar el perfil:', error);
-        // Detalles adicionales del error para depuración
-        const errorDetails = {
-            name: error.name,
-            message: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-            ...(error.errors && { validationErrors: error.errors })
-        };
-        
-        res.status(500).json({ 
-            success: false, 
-            message: 'Error al actualizar el perfil',
-            error: error.message,
-            ...(process.env.NODE_ENV === 'development' && { details: errorDetails })
-        });
+  try {
+    // Verificar si el cuerpo de la solicitud está vacío
+    if (!req.body || Object.keys(req.body).length === 0) {
+      console.log('Error: Cuerpo de la solicitud vacío');
+      return res.status(400).json({
+        success: false,
+        message: 'El cuerpo de la solicitud no puede estar vacío'
+      });
     }
+
+    // Extraer campos permitidos para actualizar
+    const { nombre, telefono, direccion } = req.body;
+
+    // Construir objeto de actualización solo con campos proporcionados
+    const updateFields = {};
+    if (nombre !== undefined) updateFields.nombre = nombre.trim();
+    if (telefono !== undefined) updateFields.telefono = telefono.trim();
+    if (direccion !== undefined) updateFields.direccion = direccion.trim();
+
+    // Verificar que al menos un campo esté presente
+    if (Object.keys(updateFields).length === 0) {
+      console.log('Error: No se proporcionaron campos válidos para actualizar');
+      return res.status(400).json({
+        success: false,
+        message: 'Debe proporcionar al menos un campo para actualizar'
+      });
+    }
+
+    try {
+      const usuario = await Usuario.findByIdAndUpdate(
+        req.user._id,
+        { $set: updateFields },
+        { new: true, runValidators: true }
+      ).select('nombre email telefono direccion').lean();
+
+      if (!usuario) {
+        console.log('Usuario no encontrado con ID:', req.user._id);
+        return res.status(404).json({
+          success: false,
+          message: 'Usuario no encontrado'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Perfil actualizado correctamente',
+        user: {
+          nombre: usuario.nombre,
+          email: usuario.email,
+          telefono: usuario.telefono,
+          direccion: usuario.direccion
+        }
+      });
+    } catch (dbError) {
+      console.error('Error de base de datos:', dbError);
+      throw dbError; // Esto será capturado por el catch externo
+    }
+  } catch (error) {
+    console.error('Error al actualizar el perfil:', error);
+    // Detalles adicionales del error para depuración
+    const errorDetails = {
+      name: error.name,
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      ...(error.errors && { validationErrors: error.errors })
+    };
+
+    res.status(500).json({
+      success: false,
+      message: 'Error al actualizar el perfil',
+      error: error.message,
+      ...(process.env.NODE_ENV === 'development' && { details: errorDetails })
+    });
+  }
 });
 
 // Ruta de configuración de perfil
 app.get('/perfil', authMiddleware, async (req, res) => {
   try {
-    
+
     // Obtener los datos actualizados del usuario
     const Usuario = require('./models/usuario');
     const usuario = await Usuario.findById(req.user._id).select('nombre email telefono direccion');
-    
+
     if (!usuario) {
       console.log('Usuario no encontrado en la base de datos');
       return res.redirect('/login');
     }
-    
+
     // Renderizar la plantilla con los datos del usuario
     res.render('configuracion', {
       user: {
@@ -344,7 +392,7 @@ app.get('/perfil', authMiddleware, async (req, res) => {
 // Ruta para ver los pedidos del usuario
 app.get('/pedidos', authMiddleware, async (req, res) => {
   try {
-    
+
     // Obtener los pedidos del usuario
     const Pedido = require('./models/pedidos');
     const pedidos = await Pedido.find({ usuario: req.user._id })
@@ -352,7 +400,7 @@ app.get('/pedidos', authMiddleware, async (req, res) => {
       .populate('productos.producto')
       .populate('factura');
 
-    res.render('pedidos', { 
+    res.render('pedidos', {
       title: 'Mis Pedidos',
       pedidos: pedidos || [],
       user: {
@@ -362,7 +410,7 @@ app.get('/pedidos', authMiddleware, async (req, res) => {
         isAuthenticated: true
       },
       helpers: {
-        formatDate: function(date) {
+        formatDate: function (date) {
           return date ? new Date(date).toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'long',
@@ -371,14 +419,14 @@ app.get('/pedidos', authMiddleware, async (req, res) => {
             minute: '2-digit'
           }) : 'Fecha no disponible';
         },
-        formatCurrency: function(amount) {
+        formatCurrency: function (amount) {
           return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(amount || 0);
         }
       }
     });
   } catch (error) {
     console.error('Error al cargar los pedidos:', error);
-    res.status(500).render('pedidos', { 
+    res.status(500).render('pedidos', {
       title: 'Mis Pedidos',
       pedidos: [],
       user: {
@@ -392,20 +440,20 @@ app.get('/pedidos', authMiddleware, async (req, res) => {
   }
 });
 
-app.get('/carrito', (req, res) =>{
-  res.render('carrito', {title: 'Carrito'})
+app.get('/carrito', (req, res) => {
+  res.render('carrito', { title: 'Carrito' })
 })
 
 
-app.get('/tabletas', async (req, res) =>{
+app.get('/tabletas', async (req, res) => {
   try {
     const productos = await getProductsByCategory('computadora');
-  
-  res.render('sections/laptops', {
-    title: 'Tabletas',
-    productosComputadora: productos || [],
-    user: res.locals.user || { isAuthenticated: false }
-  });
+
+    res.render('sections/laptops', {
+      title: 'Tabletas',
+      productosComputadora: productos || [],
+      user: res.locals.user || { isAuthenticated: false }
+    });
   } catch (error) {
     console.error('Error al cargar la pagina de tabletas:', error);
     res.status(500).render('sections/laptops', {
@@ -419,7 +467,7 @@ app.get('/tabletas', async (req, res) =>{
 app.get('/telefonos', async (req, res) => {
   try {
     const productos = await getProductsByCategory('telefono');
-    
+
     res.render('sections/smartphones', {
       title: 'Teléfonos',
       productosSmartphones: productos || [],
@@ -438,7 +486,7 @@ app.get('/telefonos', async (req, res) => {
 app.get('/audio', async (req, res) => {
   try {
     const productos = await getProductsByCategory('audio');
-    
+
     res.render('sections/audio', {
       title: 'Audio',
       productosAudio: productos || [],
@@ -457,7 +505,7 @@ app.get('/audio', async (req, res) => {
 app.get('/gamer', async (req, res) => {
   try {
     const productos = await getProductsByCategory('gaming');
-    
+
     res.render('sections/gaming', {
       title: 'Gaming',
       productosGaming: productos || [],
@@ -478,7 +526,7 @@ app.get('/gamer', async (req, res) => {
 
 // Manejador para rutas no encontradas (404)
 app.use((req, res, next) => {
-  res.status(404).render('error', { 
+  res.status(404).render('error', {
     title: 'Página no encontrada',
   });
 });

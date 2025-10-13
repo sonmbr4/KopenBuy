@@ -26,9 +26,15 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 /* Navbar */
+header {
+    position: relative;
+    z-index: 1040;
+}
 .navbar {
     background-color: var(--secondary-color);
     padding: 0.75rem 0;
+    position: relative;
+    z-index: 1040;
 }
 .navbar-brand {
     font-weight: 700;
@@ -184,6 +190,8 @@ h1,h2,h3,h4,h5,h6 {
 /* Carousel */
 .product-carousel {
     margin-top: 1rem;
+    position: relative;
+    z-index: 1;
 }
 .carousel-item {
     transition: transform 1s ease-in-out;
@@ -226,6 +234,8 @@ h1,h2,h3,h4,h5,h6 {
 }
 .product-section {
     overflow: hidden;
+    position: relative;
+    z-index: 1;
 }
 
 /* Modal & Footer */
@@ -298,6 +308,7 @@ h1,h2,h3,h4,h5,h6 {
 
 .dropdown-menu {
     min-width: 120px;
+    z-index: 1050 !important;
 }
 
 #register-form .form-control:focus {

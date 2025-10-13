@@ -9,14 +9,14 @@ const usuarioSchema = new mongoose.Schema({
   // Nombre del usuario (obligatorio)
   nombre: { type: String, required: true, trim: true },
   // Email único y obligatorio
-  email: { type: String, required: true, unique: true, lowercase: true, math:[/^\S+@\S+\.\S+$/, 'Porfavor ingrese un email valido']},
+  email: { type: String, required: true, unique: true, lowercase: true, match: [/^\S+@\S+\.\S+$/, 'Por favor ingrese un email válido'] },
   // Contraseña del usuario
-  password: { type: String, required: true, minlength: 6 },
+  password: { type: String, required: true, minlength: 6, uppercase: true, lowercase: true, special: true, number: true },
   role:{type: String, enum: ['admin', 'user'], default: 'user'},
   // Dirección del usuario (opcional)
   direccion: { type: String },
     // Teléfono del usuario (opcional)
-  telefono: { type: String },
+  telefono: { type: String, match: [/^3\d{5,11}$/, 'El teléfono debe iniciar con 3 y tener entre 6 y 12 dígitos'] },
   createdAt : { type: Date, default: Date.now}
 });
 

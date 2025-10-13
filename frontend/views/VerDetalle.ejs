@@ -100,23 +100,31 @@
 
                             <!-- Botones de acción -->
                             <div class="action-buttons">
-                                <% if (producto.stock> 0) { %>
-                                    <button class="btn btn-success btn-lg px-4 flex-fill add-to-cart-btn auth-only"
+                                <% if (producto.stock > 0) { %>
+                                    <!-- Botón visible solo para usuarios autenticados -->
+                                    <button class="btn btn-success btn-lg px-4 flex-fill add-to-cart-btn auth-only" 
                                         style="display: none;" data-product-id="<%= producto._id %>">
                                         <i class="bi bi-cart-plus me-2"></i>Agregar al carrito
                                     </button>
-                                    <% } else { %>
-                                        <div class="alert alert-warning d-flex align-items-center" role="alert">
-                                            <i class="bi bi-exclamation-triangle me-2"></i>
-                                            <div>
-                                                <strong>Producto agotado</strong><br>
-                                                <small>Te notificaremos cuando esté disponible nuevamente</small>
-                                            </div>
+                                    
+                                    <!-- Botón para usuarios no autenticados -->
+                                    <button class="btn btn-outline-secondary btn-lg w-100 not-logged-in-btn" 
+                                        style="opacity: 0.7; cursor: not-allowed;" disabled>
+                                        <i class="bi bi-exclamation-circle me-2"></i>Debes iniciar sesión para agregar al carrito
+                                    </button>
+                                    
+                                <% } else { %>
+                                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        <div>
+                                            <strong>Producto agotado</strong><br>
+                                            <small>Te notificaremos cuando esté disponible nuevamente</small>
                                         </div>
-                                        <button type="button" class="btn btn-outline-primary btn-lg w-100">
-                                            <i class="bi bi-bell me-2"></i>Notificarme cuando esté disponible
-                                        </button>
-                                        <% } %>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-lg w-100">
+                                        <i class="bi bi-bell me-2"></i>Notificarme cuando esté disponible
+                                    </button>
+                                <% } %>
                             </div>
                         </div>
                     </div>

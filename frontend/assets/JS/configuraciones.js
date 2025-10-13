@@ -51,8 +51,29 @@ document.addEventListener('DOMContentLoaded', function () {
                             // Actualizar el valor original
                             originalValues[fieldName] = newValue;
                             // Actualizar la interfaz si es necesario
-                            if (fieldName === 'nombre' && userName) {
-                                userName.textContent = newValue;
+                            if (fieldName === 'nombre') {
+                                // Actualizar cualquier elemento con id userName en la página (perfil y/o header)
+                                if (userName) {
+                                    userName.textContent = newValue;
+                                }
+                                const headerUserName = document.querySelector('#userMenu #userName');
+                                if (headerUserName) {
+                                    headerUserName.textContent = newValue;
+                                }
+
+                                // Sincronizar el usuario en localStorage para que persista en otras páginas
+                                try {
+                                    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+                                    const updatedUser = { ...storedUser, ...(data.user || {}), nombre: newValue };
+                                    localStorage.setItem('user', JSON.stringify(updatedUser));
+
+                                    // Si existe la función global para refrescar el header, llamarla
+                                    if (typeof updateUIAfterLogin === 'function') {
+                                        updateUIAfterLogin(updatedUser);
+                                    }
+                                } catch (e) {
+                                    console.warn('No se pudo actualizar localStorage.user:', e);
+                                }
                             }
                             showAlert(successMessage, 'success');
                         } else {

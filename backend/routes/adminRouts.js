@@ -6,6 +6,33 @@ const Pedido = require('../models/pedidos');
 const Usuario = require('../models/usuario');
 const estadisticasController = require('../controllers/estadisticasController');
 
+// Middleware para obtener el usuario actual
+const getCurrentUser = async (req, res, next) => {
+  try {
+    if (req.user && req.user.id) {
+      const user = await Usuario.findById(req.user.id);
+      if (user) {
+        req.currentUser = {
+          name: user.nombre || 'Administrador',
+          email: user.email || 'admin@kopenbuy.com'
+        };
+      } else {
+        req.currentUser = { name: 'Administrador', email: 'admin@kopenbuy.com' };
+      }
+    } else {
+      req.currentUser = { name: 'Administrador', email: 'admin@kopenbuy.com' };
+    }
+    next();
+  } catch (error) {
+    console.error('Error al obtener el usuario actual:', error);
+    req.currentUser = { name: 'Administrador', email: 'admin@kopenbuy.com' };
+    next();
+  }
+};
+
+// Aplicar el middleware a todas las rutas de admin
+router.use(getCurrentUser);
+
 //Ruta productos
 // /admin/productos
 router.get('/productos', productController.getProducts);
@@ -57,7 +84,8 @@ router.get('/pedidos', async (req, res) => {
 
         res.render('admin/adminPedidos', { 
             title: 'Pedidos',
-            allOrders
+            allOrders,
+            user: req.currentUser
         });
 
     } catch (error) {
@@ -69,7 +97,7 @@ router.get('/pedidos', async (req, res) => {
     }
 });
 
-//Ruta para clientes
+// Ruta para clientes
 router.get('/clientes', async (req, res) => {
     try {
         const usuarios = await Usuario.find().lean();
@@ -103,10 +131,18 @@ router.get('/clientes', async (req, res) => {
             createdAt: u.createdAt
         }));
 
-        res.render('admin/adminClientes', { clientes });
+        res.render('admin/adminClientes', { 
+            clientes,
+            user: req.currentUser,
+            title: 'Clientes'
+        });
     } catch (error) {
         console.error('Error al cargar los clientes:', error);
-        res.render('admin/adminClientes', { clientes: [] });
+        res.render('admin/adminClientes', { 
+            clientes: [],
+            user: req.currentUser,
+            title: 'Clientes'
+        });
     }
 });
 

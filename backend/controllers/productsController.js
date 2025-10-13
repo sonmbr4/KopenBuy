@@ -1,6 +1,7 @@
 // backend/controllers/productsController.js
 const Product = require('../models/products');
 const Categoria = require('../models/categoria');
+const Usuario = require('../models/usuario');
 const path = require('path');
 const fs = require('fs');
 
@@ -54,10 +55,17 @@ exports.getProducts = async (req, res) => {
     const products = await Product.find(filter).sort({ createdAt: -1 });
     const categorias = await Categoria.find();
     
+    // Obtener el usuario actual
+    const user = req.user ? await Usuario.findById(req.user.id) : null;
+    
     res.render('admin/adminProductos', {
       products,
       categorias,
-      filters: { categoria, stockMaximo }
+      filters: { categoria, stockMaximo },
+      user: user ? { 
+        name: user.nombre || 'Administrador',
+        email: user.email || 'admin@kopenbuy.com'
+      } : { name: 'Administrador', email: 'admin@kopenbuy.com' }
     });
   } catch (error) {
     console.error('Error al cargar los productos:', error);
