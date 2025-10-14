@@ -194,12 +194,26 @@ app.post("/crear-preferencia", async (req, res) => {
 
 
 
-// Ruta para mostrar el catálogo de productos
+// Ruta para mostrar el catálogo de productos con búsqueda
 app.get("/productos", async (req, res) => {
   try {
-    const productos = await Product.find({}).lean();
+    const searchQuery = req.query.search;
+    let query = {};
+    
+    if (searchQuery) {
+      query = {
+        $or: [
+          { name: { $regex: searchQuery, $options: 'i' } },
+          { description: { $regex: searchQuery, $options: 'i' } },
+          { category: { $regex: searchQuery, $options: 'i' } }
+        ]
+      };
+    }
+    
+    const productos = await Product.find(query).lean();
     res.render('sections/catalogo', { 
       productosCatalogo: productos,
+      searchQuery: searchQuery || '',
       user: res.locals.user || { isAuthenticated: false }
     });
   } catch (error) {
