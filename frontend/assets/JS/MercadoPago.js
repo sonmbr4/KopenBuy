@@ -1,5 +1,5 @@
 // Configure la clave pública de Mercado Pago
-const publicKey = "APP_USR-c5d40d00-b2ec-4531-9289-7d58771e7ca3";
+const publicKey = "APP_USR-59296f7f-1244-4c41-8c4b-89099d598bce";
 
 // Función para inicializar el botón de pago con datos del carrito
 const initPayment = async () => {
