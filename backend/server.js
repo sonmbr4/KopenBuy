@@ -194,6 +194,25 @@ app.post("/crear-preferencia", async (req, res) => {
 
 
 
+// Ruta para mostrar el catálogo de productos
+app.get("/productos", async (req, res) => {
+  try {
+    const productos = await Product.find({}).lean();
+    res.render('sections/catalogo', { 
+      productosCatalogo: productos,
+      user: res.locals.user || { isAuthenticated: false }
+    });
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    res.status(500).render('error', { 
+      message: 'Error al cargar el catálogo',
+      user: res.locals.user || { isAuthenticated: false }
+    });
+  }
+});
+
+
+
 // Ruta para ver detalles de producto
 app.get('/productos/:id', async (req, res) => {
   try {
