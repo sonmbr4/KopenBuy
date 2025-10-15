@@ -1,5 +1,5 @@
 // Configure la clave pública de Mercado Pago
-const publicKey = "APP_USR-59296f7f-1244-4c41-8c4b-89099d598bce";
+const publicKey = process.env.PublicKey;
 
 // Función para inicializar el botón de pago con datos del carrito
 const initPayment = async () => {
@@ -25,7 +25,7 @@ const initPayment = async () => {
         console.log('Items a enviar a Mercado Pago:', items);
 
         // 3. Crear la preferencia con los datos reales del carrito
-        const response = await fetch('http://localhost:7070/crear-preferencia', {
+        const response = await fetch('/crear-preferencia', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

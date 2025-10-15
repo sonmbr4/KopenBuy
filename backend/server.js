@@ -16,7 +16,7 @@ const authMiddleware = require('./middlewares/userMiddleware');
 // SDK de Mercado Pago
 const { MercadoPagoConfig, Preference } = require('mercadopago');
 // Agrega credenciales
-const client = new MercadoPagoConfig({ accessToken: 'APP_USR-1340642060434040-101214-8c63c12c3da94056bdfaa84d8d36369f-2921654273' });
+const client = new MercadoPagoConfig({ accessToken: process.env.Acces_Token });
 
 
 
