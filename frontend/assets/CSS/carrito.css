@@ -1,0 +1,34 @@
+/*
+ * Hoja de estilos: carrito.css
+ * Propósito: Estilos específicos de la página del carrito y su resumen.
+ */
+.cart-item {
+    transition: background-color 0.2s ease;
+}
+
+.cart-item:hover {
+    background-color: #f8f9fa;
+}
+
+.sticky-top {
+    position: sticky;
+    top: 20px;
+    z-index: 1020;
+}
+
+@media (max-width: 991.98px) {
+    .sticky-top {
+        position: static;
+    }
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.cart-item img {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+}

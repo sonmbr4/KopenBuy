@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de administración de Kopen Buy - Gestión de clientes">
+    <title>Panel de Administración - Kopen Buy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/CSS/admin.css">
+</head>
+
+<body class="bg-light">
+    <header class="admin-header sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <button class="btn btn-link d-md-none me-2 text-white" id="sidebarToggle">
+                    <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+                </button>
+                <a class="navbar-brand fw-bold" href="/">
+                    <i class="bi bi-bag-check me-2"></i>Kopen Buy Admin
+                </a>
+                <div class="d-flex align-items-center ms-auto">
+                    <div class="dropdown">
+                        <a href="/" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                            id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-2 fs-5"></i>
+                            <span>Administrador</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li>
+                                <a href="#" onclick="configuracion()" class="dropdown-item" data-bs-toggle="offcanvas"
+                                    data-bs-target="#profileConfigOffcanvas">
+                                    <i class="bi bi-gear me-2"></i> Configuración
+                                </a>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><button id="logout-btn" onclick="logout()" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 col-md-3 sidebar p-0" id="sidebar">
+                <div class="text-center p-4 border-bottom">
+                    <i class="bi bi-person-circle fs-1 text-success"></i>
+                    <h5 class="mt-2 mb-1">Administrador</h5>
+                    <small class="text-muted">admin@kopenbuy.com</small>
+                </div>
+                <div class="list-group list-group-flush rounded-0">
+                    <a href="/admin/productos" class="list-group-item list-group-item-action">
+                        <i class="bi bi-boxes me-2"></i> Productos
+                    </a>
+                    <a href="/admin/pedidos" class="list-group-item list-group-item-action">
+                        <i class="bi bi-cart me-2"></i> Pedidos
+                    </a>
+                    <a href="/admin/clientes" class="list-group-item list-group-item-action active">
+                        <i class="bi bi-people me-2"></i> Clientes
+                    </a>
+                    <a href="/admin/estadisticas" class="list-group-item list-group-item-action">
+                        <i class="bi bi-graph-up me-2"></i> Estadísticas
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 col-md-9 ms-sm-auto px-md-4 py-4 main-content" id="mainContent">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h2 class="h3 fw-bold text-success">
+                        <i class="bi bi-people me-2"></i>Gestión de Clientes
+                    </h2>
+                </div>
+
+                <!-- Clients Table -->
+                <div class="row g-3" id="clientsCards">
+    <% clientes.forEach(cliente => { %>
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-success text-white d-flex align-items-center">
+                <i class="bi bi-person-circle fs-3 me-2"></i>
+                <div>
+                    <h5 class="mb-0"><%= cliente.nombre %> <%= cliente.apellido %></h5>
+                    <small><%= cliente.email %></small>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="mb-1"><strong>Compras:</strong> <%= cliente.compras || '0' %></p>
+                <p class="mb-1"><strong>Registro:</strong> 
+                    <%= cliente.fechaRegistro ? new Date(cliente.fechaRegistro).toLocaleDateString() : '-' %>
+                </p>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <% const isActive = (cliente.activo === undefined || cliente.activo === null) ? true : !!cliente.activo; %>
+                <% if(isActive) { %>
+                    <span class="badge bg-success">Activo</span>
+                <% } else { %>
+                    <span class="badge bg-secondary">Inactivo</span>
+                <% } %>
+
+                <div class="btn-group">
+                    <!-- VER -->
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#viewClientModal"
+                        onclick="loadClientDetails('<%= cliente._id %>')">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <!-- CAMBIAR ESTADO -->
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#editClientModal"
+                        onclick="loadEditClientForm('<%= cliente._id %>')">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <!-- CONTACTAR -->
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=<%= encodeURIComponent(cliente.email) %>" 
+                       class="btn btn-sm btn-outline-success"
+                       title="Contactar por Gmail"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <i class="bi bi-google"></i>
+                    </a>
+                    <!-- ELIMINAR -->
+                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                        data-bs-target="#deleteClientModal"
+                        onclick="setClientToDelete('<%= cliente._id %>', '<%= cliente.nombre %> <%= cliente.apellido %>')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+</div>
+
+                <!-- Pagination -->
+                <nav aria-label="Client pagination">
+                    <ul class="pagination justify-content-center" id="paginationContainer">
+                        <!-- Los botones de paginación se generarán dinámicamente con JavaScript -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- === MODALES === -->
+    <!-- MODAL PARA VER DETALLE CLIENTE -->
+    <div class="modal fade" id="viewClientModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles del Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="clientDetailsContent">
+                    <!-- Los detalles se cargarán aquí dinámicamente -->
+                    <p>Cargando información...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA EDITAR CLIENTE -->
+    <div class="modal fade" id="editClientModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cambiar Estado del Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulario de edición solo para estado -->
+                    <form id="editClientForm">
+                        <input type="hidden" id="editClientId" name="id">
+                        <div class="mb-3">
+                            <label for="editActivo" class="form-label">Estado</label>
+                            <select class="form-select" id="editActivo" name="activo">
+                                <option value="true">Activo</option>
+                                <option value="false">Inactivo</option>
+                            </select>
+                        </div>
+                    </form>
+                    <div class="alert alert-info mt-3 mb-0" role="alert">
+                        Solo puedes cambiar el estado del cliente. La información personal no es editable por el administrador.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="editClientForm" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA ELIMINAR CLIENTE -->
+    <div class="modal fade" id="deleteClientModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de eliminar al cliente <strong id="clientNameToDelete">-</strong>?</p>
+                    <p class="text-danger">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteClient()">
+                        Sí, Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer bg-dark text-white py-4 mt-4">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="bi bi-bag-check text-success me-2"></i>Kopen Buy Admin</h5>
+                    <p class="mb-0 text-white-50">Panel de administración para la tienda de tecnología Kopen Buy</p>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="mb-3">Enlaces</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/" class="text-white-50 text-decoration-none"><i
+                                    class="bi bi-arrow-right-short text-success"></i> Tienda Principal</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none"><i
+                                    class="bi bi-arrow-right-short text-success"></i> Documentación</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="mb-3">Soporte</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="bi bi-envelope text-success me-2"></i> soporte@kopenbuy.com</li>
+                        <li class="mb-2"><i class="bi bi-telephone text-success me-2"></i> +123 456 7890</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 bg-success bg-opacity-25">
+            <div class="text-center">
+                <p class="mb-0 small text-white-50">&copy; 2025 Kopen Buy. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/JS/adminClient.js"></script>
+</body>
+
+</html>

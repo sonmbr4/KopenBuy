@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Configuración de tu cuenta en Kopen Buy">
+    <title>Configuración - Kopen Buy</title>
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .settings-sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-right: 2rem;
+            height: fit-content;
+        }
+
+        .settings-content {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+        }
+
+        .nav-link {
+            color: #4a4a4a;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .nav-link i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1.5rem;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('./partials/header.ejs'); %>
+
+        <div class="container settings-container">
+
+            <!-- Contenido principal -->
+            <main class="settings-content">
+                <section>
+                    <div class="profile-header">
+                        <div class="profile-avatar d-flex align-items-center justify-content-center rounded-circle"
+                            style="width: 80px; height: 80px; background-color: #198754; border: 2px solid #198754;">
+                            <i class="bi bi-person-fill" style="font-size: 2.5rem; color: white;"></i>
+                        </div>
+                        <div class="ms-3">
+                            <h2 class="h4 mb-1" id="userName">
+                                <%= typeof user !=='undefined' ? user.nombre : 'Usuario' %>
+                            </h2>
+                            <p class="text-muted mb-0" id="userEmail">
+                                <%= typeof user !=='undefined' ? user.email : 'usuario@ejemplo.com' %>
+                            </p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Información personal</h3>
+
+                    <form id="profileForm">
+                        <div class="row mb-3">
+                            <div class="col-12 mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label for="nombre" class="form-label mb-0">Nombre completo</label>
+                                    <button type="button" id="editNameBtn" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </button>
+                                </div>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="nombre" name="nombre"
+                                        value="<%= typeof user !== 'undefined' ? user.nombre : '' %>" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>"
+                                readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label for="phone" class="form-label mb-0">Teléfono</label>
+                                <button type="button" id="editPhoneBtn" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                            </div>
+                            <input type="tel" class="form-control" id="phone" name="telefono"
+                                value="<%= user.telefono || '' %>" readonly>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label for="direccion" class="form-label mb-0">Dirección</label>
+                                <button type="button" id="editAddressBtn" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                            </div>
+                            <textarea class="form-control" id="direccion" name="direccion" rows="2" readonly><%= user.direccion || '' %></textarea>
+                        </div>
+                    </form>
+
+                    <!-- Sección de Cambio de Contraseña -->
+                    <h3 class="section-title mt-5">Cambiar contraseña</h3>
+                    <form id="passwordForm" class="mb-3">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Contraseña actual</label>
+                            <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">Nueva contraseña</label>
+                            <input type="password" class="form-control" id="newPassword" name="newPassword" minlength="6" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmNewPassword" class="form-label">Confirmar nueva contraseña</label>
+                            <input type="password" class="form-control" id="confirmNewPassword" name="confirmNewPassword" minlength="6" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Actualizar contraseña</button>
+                    </form>
+
+                </section>
+            </main>
+        </div>
+
+        <%- include('./partials/footer.ejs'); %>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="/JS/user.js"></script>
+        <script src="/JS/carrito.js"></script>
+        <script src="/JS/animations.js"></script>
+        <script src="/JS/imgError.js"></script>
+        <script src="/JS/configuraciones.js"></script>
+    </body>
+
+    </html>
